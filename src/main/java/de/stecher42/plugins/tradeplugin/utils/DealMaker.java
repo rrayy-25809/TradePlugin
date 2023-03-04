@@ -80,7 +80,24 @@ public class DealMaker {
         this.currentDealInvs.add(tw);
     }
 
-    public void removeInv(TradingWindow tw) {
+    public void removeTradingWindow(TradingWindow tw) {
         currentDealInvs.remove(tw);
+    }
+
+    public boolean isInventoryInList(Inventory inv) {
+        for(TradingWindow c : currentDealInvs) {
+            if(inv.equals(c.playerInventory) || inv.equals(c.oppositeInventory)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public TradingWindow getTradingWindow(Inventory inv) {
+        for(TradingWindow c : currentDealInvs) {
+            if(inv.equals(c.playerInventory) || inv.equals(c.oppositeInventory))
+                return c;
+        }
+        return null;
     }
 }

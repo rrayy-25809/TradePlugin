@@ -2,7 +2,9 @@ package de.stecher42.plugins.tradeplugin.main;
 
 import de.stecher42.plugins.tradeplugin.commands.TradeCommand;
 import de.stecher42.plugins.tradeplugin.utils.DealMaker;
+import de.stecher42.plugins.tradeplugin.utils.TradingWindow;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin {
@@ -16,6 +18,9 @@ public final class Main extends JavaPlugin {
         this.plugin = this;
         this.dealMaker = new DealMaker();
         this.getCommand("trade").setExecutor(new TradeCommand());
+
+        PluginManager pm = Bukkit.getPluginManager();
+        pm.registerEvents(new TradingWindow(), this);
 
     }
 
