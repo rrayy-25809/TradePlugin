@@ -226,6 +226,7 @@ public class TradingWindow implements Listener {
                 pointer++;
             }
         }
+        System.out.println("projectToItemField(1) is done");
         return result;
     }
 
@@ -244,6 +245,14 @@ public class TradingWindow implements Listener {
                 }
             }
         }
+        System.out.println("projectToOpponentField(2) is done");
+    }
+
+    private void refreshInventorySwitch() {
+        this.playerSlots = this.projectToItemField(this.playerInventory);
+        this.projectToOpponentField(this.playerSlots, false);
+        this.oppositeSlots = this.projectToItemField(this.oppositeInventory);
+        this.projectToOpponentField(this.oppositeSlots, true);
     }
 
     // --- EventHandlers
@@ -264,13 +273,13 @@ public class TradingWindow implements Listener {
                 } else if(isOwnField(e.getSlot())) {
                     if(tw.playerAcceptedDeal || tw.oppositeAcceptedDeal)
                         e.setCancelled(true);
-                    else
-                        e.setCancelled(false);
-                    tw.playerSlots = tw.projectToItemField(tw.playerInventory);
-                    tw.projectToOpponentField(tw.playerSlots, false);
-                    tw.oppositeSlots = tw.projectToItemField(tw.oppositeInventory);
-                    tw.projectToOpponentField(tw.oppositeSlots, true);
-                    System.out.println("Player: " + Arrays.toString(tw.playerSlots));
+                    tw.refreshInventorySwitch();
+                    Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), new Runnable() {
+                        @Override
+                        public void run() {
+                            tw.refreshInventorySwitch();
+                        }
+                    }, 5);
                 } else {
                     e.setCancelled(true);
                 }
@@ -285,11 +294,13 @@ public class TradingWindow implements Listener {
                         e.setCancelled(true);
                     else
                         e.setCancelled(false);
-                    tw.oppositeSlots = tw.projectToItemField(tw.oppositeInventory);
-                    tw.projectToOpponentField(tw.oppositeSlots, true);
-                    tw.playerSlots = tw.projectToItemField(tw.playerInventory);
-                    tw.projectToOpponentField(tw.playerSlots, false);
-                    System.out.println("Opposite: " + Arrays.toString(tw.oppositeSlots));
+                    tw.refreshInventorySwitch();
+                    Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), new Runnable() {
+                        @Override
+                        public void run() {
+                            tw.refreshInventorySwitch();
+                        }
+                    }, 5);
                 } else {
                     e.setCancelled(true);
                 }

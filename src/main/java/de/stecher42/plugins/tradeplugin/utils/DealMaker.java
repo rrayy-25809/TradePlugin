@@ -12,7 +12,10 @@ public class DealMaker {
     private ArrayList<TradingWindow> currentDealInvs = new ArrayList<TradingWindow>();
 
     public boolean makeTradeOffer(Player owner, Player target) {
-        if(pairs.containsKey(owner.getUniqueId())) {
+        if(owner.getUniqueId().equals(target.getUniqueId())) {
+            owner.sendMessage(Main.PREFIX + "You can't trade with yourself!");
+            return false;
+        } else if(pairs.containsKey(owner.getUniqueId())) {
             owner.sendMessage(Main.PREFIX + "You already sent a trade request to " +
                     pairs.get(owner.getUniqueId()).getName() +
                     "! Please cancel the trade, by using /trade cancel first,");
