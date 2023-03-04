@@ -23,13 +23,16 @@ public class TradeCommand implements CommandExecutor {
             if(p.hasPermission("trade.trade")) {
                 DealMaker dm = Main.getPlugin().getDealMaker();
                 if(args.length >= 1 && args[0].replace(" ", "") != "") {
-                    if(args[0].equals("accept")) {
+                    if(args[0].equalsIgnoreCase("accept")) {
                         dm.acceptTrade(p);
                         return true;
+                    } else if(args[0].equalsIgnoreCase("cancel")) {
+                        dm.cancelOwnTrade(p);
                     } else if(Bukkit.getPlayer(args[0]) != null) {
                         Player opposite = Bukkit.getPlayer(args[0]);
-                        dm.makeTradeOffer(p, opposite);
-                        p.sendMessage(String.format("%sThe trade request was now send to %s!", Main.PREFIX, args[0]));
+                        boolean success = dm.makeTradeOffer(p, opposite);
+                        if(success)
+                            p.sendMessage(String.format("%sThe trade request was now send to %s!", Main.PREFIX, args[0]));
                     } else {
                         p.sendMessage(String.format("%sCould not find a player with the name '%s'. Please use " +
                                 "/trade <Name> or /trade accept, to accept an incoming trade!", Main.PREFIX, args[0]));

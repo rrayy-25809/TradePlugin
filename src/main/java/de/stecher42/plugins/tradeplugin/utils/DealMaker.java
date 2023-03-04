@@ -5,24 +5,23 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class DealMaker {
     private HashMap<UUID, Player> pairs = new HashMap<UUID, Player>(); // Owner saved as UUID in key
-    private ArrayList<Inventory> currentDealInvs = new ArrayList<Inventory>();
+    private ArrayList<TradingWindow> currentDealInvs = new ArrayList<TradingWindow>();
 
-    public void makeTradeOffer(Player owner, Player target) {
+    public boolean makeTradeOffer(Player owner, Player target) {
         if(pairs.containsKey(owner.getUniqueId())) {
-            owner.sendMessage(Main.PREFIX + "You already send a trade request to " +
+            owner.sendMessage(Main.PREFIX + "You already sent a trade request to " +
                     pairs.get(owner.getUniqueId()).getName() +
                     "! Please cancel the trade, by using /trade cancel first,");
+            return false;
         } else {
             pairs.put(owner.getUniqueId(), target);
             target.sendMessage(Main.PREFIX + "You got a new trade offer by " + owner.getName() +
                     "! Use /trade accept <Name>, to deal.");
+            return true;
         }
     }
 
@@ -53,7 +52,7 @@ public class DealMaker {
                 if(pairs.get(t).equals(targetted)) {
                     // Found trade offer pair
                     if(Bukkit.getPlayer(t) != null) { // Checking if trading partner is online
-                        TradingWindow trade = new TradingWindow(Bukkit.getPlayer(t), targetted);
+                        TradingWindow trade = new TradingWindow(Objects.requireNonNull(Bukkit.getPlayer(t)), targetted);
                     } else {
                         targetted.sendMessage(Main.PREFIX + "Sorry, but this player went offline!");
                     }
@@ -62,25 +61,26 @@ public class DealMaker {
                 }
             }
         } else {
-            targetted.sendMessage(Main.PREFIX + "Sorry, but this player did't made you an trading offer!");
+            targetted.sendMessage(Main.PREFIX + "Sorry, but you got no trading offer.");
         }
     }
 
     public void cancelOwnTrade(Player owner) {
         if(pairs.containsKey(owner.getUniqueId())) {
-            String opposite = pairs.get(owner.getUniqueId()).getName();
+            Player opposite = pairs.get(owner.getUniqueId());
             pairs.remove(owner.getUniqueId());
-            owner.sendMessage(Main.PREFIX + "You cancelled your trade with " + opposite + "!");
+            owner.sendMessage(Main.PREFIX + "You cancelled your trade with " + opposite.getName() + "!");
+            opposite.sendMessage(Main.PREFIX + owner.getName() + " canceled the trade with you.");
         } else {
             owner.sendMessage(Main.PREFIX + "Sorry, but you got no trade offers to cancel!");
         }
     }
 
-    public void addInv(Inventory inv) {
-        this.currentDealInvs.add(inv);
+    public void addTradingWindow(TradingWindow tw) {
+        this.currentDealInvs.add(tw);
     }
 
-    public void removeInv(Inventory inv) {
-        currentDealInvs.remove(inv);
+    public void removeInv(TradingWindow tw) {
+        currentDealInvs.remove(tw);
     }
 }
