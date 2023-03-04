@@ -7,9 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -47,25 +45,6 @@ public class TradingWindow implements Listener {
         this.oppositeInventory = Bukkit.createInventory(null, CHEST_SIZE,
                  "§6§lDeal with " + player.getName());
 
-        oppositeRedGlass = new ItemStack(Material.RED_STAINED_GLASS_PANE);
-        ItemMeta imRed = oppositeRedGlass.getItemMeta();
-        imRed.setDisplayName("§c§lOpposite didn't accepted yet");
-        oppositeRedGlass.setItemMeta(imRed);
-
-        oppositeGreenGlass = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
-        ItemMeta imOppGreen = oppositeRedGlass.getItemMeta();
-        imOppGreen.setDisplayName("§a§lOpposite accepts this deal");
-        oppositeGreenGlass.setItemMeta(imOppGreen);
-
-        ownRedGlass = new ItemStack(Material.RED_STAINED_GLASS_PANE);
-        ItemMeta imOwnRed = oppositeRedGlass.getItemMeta();
-        imOwnRed.setDisplayName("§c§lDecline this deal");
-        ownRedGlass.setItemMeta(imOwnRed);
-
-        ownGreenGlass = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
-        ItemMeta imOwnGreen = oppositeRedGlass.getItemMeta();
-        imOwnGreen.setDisplayName("§a§lAccept this deal");
-        ownGreenGlass.setItemMeta(imOwnGreen);
 
         prepareInventory(playerInventory);
         prepareInventory(oppositeInventory);
@@ -93,6 +72,8 @@ public class TradingWindow implements Listener {
         imPTA.setDisplayName("§2§lAccept Trade");
         personalTradeAccepment.setItemMeta(imPTA);
 
+        this.initGlassConfig();
+
 
 
         for(int i = 0; i < ROWS * 9; i++) {
@@ -108,23 +89,48 @@ public class TradingWindow implements Listener {
         }
     }
 
+    public void initGlassConfig() {
+        oppositeRedGlass = new ItemStack(Material.RED_STAINED_GLASS_PANE);
+        ItemMeta imRed = oppositeRedGlass.getItemMeta();
+        imRed.setDisplayName("§c§lOpposite didn't accepted yet");
+        oppositeRedGlass.setItemMeta(imRed);
+
+        oppositeGreenGlass = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
+        ItemMeta imOppGreen = oppositeGreenGlass.getItemMeta();
+        imOppGreen.setDisplayName("§a§lOpposite accepts this deal");
+        oppositeGreenGlass.setItemMeta(imOppGreen);
+
+        ownRedGlass = new ItemStack(Material.RED_STAINED_GLASS_PANE);
+        ItemMeta imOwnRed = ownRedGlass.getItemMeta();
+        imOwnRed.setDisplayName("§c§lDecline this deal");
+        ownRedGlass.setItemMeta(imOwnRed);
+
+        ownGreenGlass = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
+        ItemMeta imOwnGreen = ownGreenGlass.getItemMeta();
+        imOwnGreen.setDisplayName("§a§lAccept this deal");
+        ownGreenGlass.setItemMeta(imOwnGreen);
+    }
+
+
+    // -- Togggler for deal status
+
     public void toggleOpponentsStatus(TradingWindow tw) {
 
-        tw.oppositeAcceptedDeal = !oppositeAcceptedDeal;
+        tw.oppositeAcceptedDeal = !tw.oppositeAcceptedDeal;
         for(int i = 0; i < ROWS * 9; i++) {
             if(tw.oppositeAcceptedDeal) {
                 if(isOpponentsAccepmentField(i)) {
-                    tw.playerInventory.setItem(i, oppositeGreenGlass);
+                    tw.playerInventory.setItem(i, tw.oppositeGreenGlass);
                 }
                 if(isPersonalTradeAccepmentField(i)) {
-                    tw.oppositeInventory.setItem(i, ownRedGlass);
+                    tw.oppositeInventory.setItem(i, tw.ownRedGlass);
                 }
             } else {
                 if(isOpponentsAccepmentField(i)) {
-                    tw.playerInventory.setItem(i, oppositeRedGlass);
+                    tw.playerInventory.setItem(i, tw.oppositeRedGlass);
                 }
                 if(isPersonalTradeAccepmentField(i)) {
-                    tw.oppositeInventory.setItem(i, ownGreenGlass);
+                    tw.oppositeInventory.setItem(i, tw.ownGreenGlass);
                 }
             }
         }
@@ -135,21 +141,23 @@ public class TradingWindow implements Listener {
         for(int i = 0; i < ROWS * 9; i++) {
             if(tw.playerAcceptedDeal) {
                 if(isOpponentsAccepmentField(i)) {
-                    tw.oppositeInventory.setItem(i, oppositeGreenGlass);
+                    tw.oppositeInventory.setItem(i, tw.oppositeGreenGlass);
                 }
                 if(isPersonalTradeAccepmentField(i)) {
-                    tw.playerInventory.setItem(i, ownRedGlass);
+                    tw.playerInventory.setItem(i, tw.ownRedGlass);
                 }
             } else {
                 if(isOpponentsAccepmentField(i)) {
-                    tw.oppositeInventory.setItem(i, oppositeRedGlass);
+                    tw.oppositeInventory.setItem(i, tw.oppositeRedGlass);
                 }
                 if(isPersonalTradeAccepmentField(i)) {
-                    tw.playerInventory.setItem(i, ownGreenGlass);
+                    tw.playerInventory.setItem(i, tw.ownGreenGlass);
                 }
             }
         }
     }
+
+    // --- Slot checker
 
     private boolean isPersonalTradeAccepmentField(int index) {
         return index > 9 * ROWS - 9 && index < 9 * ROWS - 5;
@@ -181,7 +189,7 @@ public class TradingWindow implements Listener {
 
         if(Main.getPlugin().getDealMaker().isInventoryInList(e.getClickedInventory())) {
             TradingWindow tw = Main.getPlugin().getDealMaker().getTradingWindow(e.getClickedInventory());
-            if(p.equals(tw.player)) {
+            if(e.getClickedInventory().equals(tw.playerInventory)) {
                 if(isPersonalTradeAccepmentField(e.getSlot())) {
                     // Player toggles deal status
                     e.setCancelled(true);
@@ -192,7 +200,7 @@ public class TradingWindow implements Listener {
                 } else {
                     e.setCancelled(true);
                 }
-            } else if(p.equals(tw.opposite)) {
+            } else if(e.getClickedInventory().equals(tw.oppositeInventory)) {
                 if(isPersonalTradeAccepmentField(e.getSlot())) {
                     // Opposite toggles own deal status
                     e.setCancelled(true);
@@ -212,10 +220,36 @@ public class TradingWindow implements Listener {
         if(!Main.getPlugin().getDealMaker().isInventoryInList(e.getInventory())) return;
         TradingWindow tw = Main.getPlugin().getDealMaker().getTradingWindow(e.getInventory());
 
-        tw.player.sendMessage(Main.PREFIX + "You declined the deal with " + tw.opposite.getName() +
-                " by closing your inventory!");
-        tw.opposite.sendMessage(Main.PREFIX + tw.player.getName() + " declined the deal!");
-        Main.getPlugin().getDealMaker().removeTradingWindow(tw);
+        if(tw.oppositeAcceptedDeal && tw.playerAcceptedDeal) {
+            // Both accepted the deal and the items to deal get flipped
+
+            for(int i = 0; i < ROWS * 9; i++) {
+                if(isOwnField(i)) {
+                    if(tw.playerInventory.getItem(i) != null)
+                        tw.opposite.getInventory().addItem(tw.playerInventory.getItem(i));
+                } else if(isOpponentsField(i)) {
+                    if(tw.playerInventory.getItem(i) != null)
+                        tw.player.getInventory().addItem(tw.playerInventory.getItem(i));
+                }
+            }
+        } else {
+            // Deal got declined, both players get their own items back
+
+            for(int i = 0; i < ROWS * 9; i++) {
+                if(isOwnField(i)) {
+                    if(tw.playerInventory.getItem(i) != null)
+                        tw.player.getInventory().addItem(tw.playerInventory.getItem(i));
+                } else if(isOpponentsField(i)) {
+                    if(tw.playerInventory.getItem(i) != null)
+                        tw.opposite.getInventory().addItem(tw.playerInventory.getItem(i));
+                }
+            }
+//            Enable after testing
+            //        tw.player.sendMessage(Main.PREFIX + "You declined the deal with " + tw.opposite.getName() +
+            //                " by closing your inventory!");
+            //        tw.opposite.sendMessage(Main.PREFIX + tw.player.getName() + " declined the deal!");
+            //        Main.getPlugin().getDealMaker().removeTradingWindow(tw);
+        }
     }
 
 
