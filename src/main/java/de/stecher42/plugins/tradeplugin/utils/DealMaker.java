@@ -76,6 +76,35 @@ public class DealMaker {
         }
     }
 
+    public void denyTrade(Player target) {
+        boolean found = false;
+        for(UUID key : pairs.keySet()) {
+            if(pairs.get(key).equals(target)) {
+                if(Bukkit.getPlayer(key) != null) {
+                    Bukkit.getPlayer(key).sendMessage(Main.PREFIX + target.getName() +
+                            " denied your trading request!");
+                    target.sendMessage(Main.PREFIX + "Declined trade request by " +
+                            Bukkit.getPlayer(key).getName());
+                }
+                pairs.remove(key);
+            }
+        }
+        if(!found)
+            target.sendMessage(Main.PREFIX + "You got no trade requests to deny!");
+    }
+
+    public void denyTrade(Player target, Player requester) {
+        if(pairs.containsKey(requester.getUniqueId())) {
+            requester.sendMessage(Main.PREFIX + target.getName() + " denied your trade request!");
+            target.sendMessage(Main.PREFIX + "Declined trade request by " +
+                    target.getName());
+            pairs.remove(requester.getUniqueId());
+            return;
+        } else {
+            target.sendMessage(Main.PREFIX + "You got no trade requests to deny!");
+        }
+    }
+
     public void addTradingWindow(TradingWindow tw) {
         this.currentDealInvs.add(tw);
     }
