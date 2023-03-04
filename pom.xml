@@ -6,7 +6,7 @@
 
     <groupId>de.stecher42.plugins</groupId>
     <artifactId>TradePlugin</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <name>TradePlugin</name>

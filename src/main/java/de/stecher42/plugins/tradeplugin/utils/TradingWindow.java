@@ -353,9 +353,9 @@ public class TradingWindow implements Listener {
                 tw.opposite.playSound(tw.opposite.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1.0f, 1.0f);
             }
 
-                tw.player.sendMessage(Main.PREFIX + "You declined the deal with " + tw.opposite.getName() +
-                        " by closing your inventory!");
-                tw.opposite.sendMessage(Main.PREFIX + tw.player.getName() + " declined the deal!");
+//                tw.player.sendMessage(Main.PREFIX + "You declined the deal with " + tw.opposite.getName() +
+//                        " by closing your inventory!");
+//                tw.opposite.sendMessage(Main.PREFIX + tw.player.getName() + " declined the deal!");
                 Main.getPlugin().getDealMaker().removeTradingWindow(tw);
 
         }
