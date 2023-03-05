@@ -222,11 +222,10 @@ public class TradingWindow implements Listener {
                 if(inv.getItem(i) != null)
                     result[pointer] = inv.getItem(i);
                 else
-                    result[pointer] = this.separator;
+                    result[pointer] = null;
                 pointer++;
             }
         }
-        System.out.println("projectToItemField(1) is done");
         return result;
     }
 
@@ -235,17 +234,24 @@ public class TradingWindow implements Listener {
         for(int i = 0; i < ROWS * 9; i++) {
             if(toPlayersInventory) {
                 if(isOpponentsField(i)) {
-                    this.playerInventory.setItem(i, playerItems[pointer]);
+                    if(playerItems[pointer] != null) {
+                        this.playerInventory.setItem(i, playerItems[pointer]);
+                    } else {
+                        this.playerInventory.setItem(i, this.separator);
+                    }
                     pointer++;
                 }
             } else {
                 if(isOpponentsField(i)) {
-                    this.oppositeInventory.setItem(i, playerItems[pointer]);
+                    if(playerItems[pointer] != null) {
+                        this.oppositeInventory.setItem(i, playerItems[pointer]);
+                    } else {
+                        this.oppositeInventory.setItem(i, this.separator);
+                    }
                     pointer++;
                 }
             }
         }
-        System.out.println("projectToOpponentField(2) is done");
     }
 
     private void _refreshInventorySwitchAsyncHelper() {
