@@ -113,6 +113,7 @@ public class DealMaker {
     }
 
     public void removeTradingWindow(TradingWindow tw) {
+        System.out.println("In removeTradingWindow() method");
         currentDealInvs.remove(tw);
     }
 
@@ -131,5 +132,26 @@ public class DealMaker {
                 return c;
         }
         return null;
+    }
+
+    public boolean isPlayerCurrentlyDealing(Player p) {
+        for(TradingWindow c : currentDealInvs) {
+            if(c.player.equals(p) || c.opposite.equals(p)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public TradingWindow getTradingWindowByPlayer(Player p) {
+        for(TradingWindow c : currentDealInvs) {
+            if(p.equals(c.player) || p.equals(c.opposite))
+                return c;
+        }
+        return null;
+    }
+
+    public ArrayList<TradingWindow> getCurrentDealInvs() {
+        return this.currentDealInvs;
     }
 }
