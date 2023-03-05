@@ -118,18 +118,22 @@ public class DealMaker {
     }
 
     public boolean isInventoryInList(Inventory inv) {
-        for(TradingWindow c : currentDealInvs) {
-            if(inv.equals(c.playerInventory) || inv.equals(c.oppositeInventory)) {
-                return true;
+        if(inv != null) {
+            for (TradingWindow c : currentDealInvs) {
+                if (inv.equals(c.playerInventory) || inv.equals(c.oppositeInventory)) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
     public TradingWindow getTradingWindow(Inventory inv) {
-        for(TradingWindow c : currentDealInvs) {
-            if(inv.equals(c.playerInventory) || inv.equals(c.oppositeInventory))
-                return c;
+        if(inv != null) {
+            for (TradingWindow c : currentDealInvs) {
+                if (inv.equals(c.playerInventory) || inv.equals(c.oppositeInventory))
+                    return c;
+            }
         }
         return null;
     }
