@@ -360,5 +360,22 @@ public class TradingWindow implements Listener {
         }
     }
 
+    @EventHandler
+    public void onInventoryMoveItem(InventoryMoveItemEvent e) {
+        DealMaker dm = Main.getPlugin().getDealMaker();
+        if(dm.isInventoryInList(e.getDestination())) {
+            // Moving item to trade inventory
+            TradingWindow tw = dm.getTradingWindow(e.getDestination());
+            if(tw.playerAcceptedDeal || tw.oppositeAcceptedDeal) {
+                // One player accepted the deal, should prevent moving items
+                e.setCancelled(true);
+            } else {
+                // TODO: Checking item movement
+            }
+        } else if(dm.isInventoryInList(e.getSource())) {
+            // Moving item out of trade inventory
+        }
+    }
+
 
 }
