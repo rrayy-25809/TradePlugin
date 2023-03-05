@@ -18,6 +18,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class TradingWindow implements Listener {
     final int ROWS = 6;
@@ -376,10 +377,55 @@ public class TradingWindow implements Listener {
                 // One player accepted the deal, should prevent moving items
                 e.setCancelled(true);
             } else {
-                // TODO: Checking item movement
+                // Checking item movement
+                for(int i = 0; i < ROWS * 9; i++) {
+                    ItemStack itemToChange = e.getDestination().getItem(i);
+                    if((isFillerIndex(i) || isPersonalTradeAccepmentField(i) || isOpponentsAccepmentField(i)) &&
+                            itemToChange.getAmount() > 1) {
+                        // Player inserted glass pane to a wrong slot by shift clicking
+                        int amount = itemToChange.getAmount() - 1;
+                        for(int j = 0; j < ROWS * 9; j++) {
+                            ItemStack itemSlotToUse = e.getDestination().getItem(j);
+                            // Checking for the next empty slot in own trading slots to insert the glass panes there
+                            if(isOwnField(j)) {
+                                if(itemSlotToUse == null ||
+                                        itemSlotToUse.getType()
+                                                .equals(itemToChange.getType())) {
+                                    // Found empty slot or slot with same material in payer's own trading slots
+                                    ItemStack itemStack = itemToChange.clone();
+                                    if(amount + e.getDestination().getItem(j).getAmount() >
+                                            e.getDestination().getItem(j).getMaxStackSize()) {
+                                        int tempAmount = (itemToChange.getMaxStackSize() - itemToChange.getAmount());
+                                        ItemStack maxStack = itemToChange.clone();
+                                        maxStack.setAmount(maxStack.getMaxStackSize());
+                                        e.getDestination().setItem(j, maxStack);
+                                        amount -= tempAmount;
+                                    } else {
+                                        // Item slot is empty, placing the itemStack to own trade slot
+                                        itemStack.setAmount(amount);
+                                        e.getDestination().setItem(j, itemStack);
+                                        e.getDestination().getItem(i).setAmount(1); // original slot to amount 1 again
+                                        amount = 0;
+                                    }
+                                }
+                            }
+                        }
+                        if(amount != 0) {
+                            // When no slot is available for item, just add it back to sender's inventory
+                            ItemStack toGive = itemToChange.clone();
+                            toGive.setAmount(amount);
+                            e.getSource().addItem(toGive);
+                            amount = 0;
+                            itemToChange.setAmount(1);
+                        }
+                    }
+                }
             }
         } else if(dm.isInventoryInList(e.getSource())) {
             // Moving item out of trade inventory
+            // Should be working, because wrong item steals should be protected by ClickEvent
+            // Shift click should only work at own item slot
+            // Maybe hacks can bypass it, be aware of itö
         }
     }
 
