@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -302,12 +303,88 @@ public class TradingWindow implements Listener {
         return translateOpponentSlotIndexToOwnSlotIndex(index, true);
     }
 
+//    private void giveItemBack(boolean isOpposite, Player holder, int index) {
+//        for(int i = 0; i < ROWS * 9; i++) {
+//            if(isOwnField(i) && (!isOpposite && this.playerInventory.getItem(i) == null) ||
+//                    (isOpposite && this.oppositeInventory.getItem(i) == null)) {
+//                // Own deal field is empty, can insert
+//
+//            }
+//        }
+//    }
+
+//    private void handleImmutableChangesOfTradingSection(boolean isOpposite, Player holder) {
+//        for(int i = 0; i < ROWS * 9; i++) {
+//            if(!isOpposite) {
+//                if(isOpponentsField(i)) {
+//                    if(!this.playerInventory.getItem(i).equals(this.oppositeInventory.getItem(translateOpponentSlotIndexToOwnSlotIndex(i)))) {
+//                        //
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+    private void handleSaveShiftClick(TradingWindow tw, boolean isOpposite, Player holder) {
+        Inventory destinationInventory = isOpposite ? tw.oppositeInventory : tw.playerInventory;
+        for(int i = 0; i < ROWS * 9; i++) {
+            ItemStack itemToChange = destinationInventory.getItem(i);
+            boolean isOpponent = tw.oppositeInventory.equals(destinationInventory);
+            int indexToCompare = translateOpponentSlotIndexToOwnSlotIndex(i);
+            Inventory inventoryToCompare = isOpponent ? tw.playerInventory : tw.oppositeInventory;
+            int originalAmount = inventoryToCompare.getItem(indexToCompare).getAmount();
+            if(isOpponentsField(i) &&
+                    itemToChange.getAmount() != originalAmount) {
+                // If condition above: Compare amount of opponent field's amount with opponent's own field
+                // Notice: Bad O-Notation! O=n^2
+                // Player inserted item to a wrong slot by shift clicking
+                int amount = itemToChange.getAmount() - originalAmount;
+                for(int j = 0; j < ROWS * 9; j++) {
+                    ItemStack itemSlotToUse = destinationInventory.getItem(j);
+                    // Checking for the next empty slot in own trading slots to insert the glass panes there
+                    if(isOwnField(j)) {
+                        if(itemSlotToUse == null ||
+                                itemSlotToUse.getType()
+                                        .equals(itemToChange.getType())) {
+                            // Found empty slot or slot with same material in payer's own trading slots
+                            ItemStack itemStack = itemToChange.clone();
+                            if(amount + destinationInventory.getItem(j).getAmount() >
+                                    destinationInventory.getItem(j).getMaxStackSize()) {
+                                int tempAmount = (itemToChange.getMaxStackSize() - itemToChange.getAmount());
+                                ItemStack maxStack = itemToChange.clone();
+                                maxStack.setAmount(maxStack.getMaxStackSize());
+                                destinationInventory.setItem(j, maxStack);
+                                amount -= tempAmount;
+                            } else {
+                                // Item slot is empty, placing the itemStack to own trade slot
+                                itemStack.setAmount(amount);
+                                destinationInventory.setItem(j, itemStack);
+                                itemToChange.setAmount(originalAmount); // original slot to original amount again
+                                amount = 0;
+                            }
+                        }
+                    }
+                }
+                if(amount != 0) {
+                    // When no slot is available for item, just add it back to sender's inventory
+                    ItemStack toGive = itemToChange.clone();
+                    toGive.setAmount(amount);
+                    holder.getInventory().addItem(toGive);
+                    amount = 0;
+                    itemToChange.setAmount(originalAmount);
+                }
+            }
+            tw.refreshInventorySwitch();
+        }
+    }
+
     // --- EventHandlers
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
         if(!(e.getWhoClicked() instanceof Player)) return;
         Player p = (Player) e.getWhoClicked();
+        DealMaker dm = Main.getPlugin().getDealMaker();
 
         if(Main.getPlugin().getDealMaker().isInventoryInList(e.getClickedInventory())) {
             TradingWindow tw = Main.getPlugin().getDealMaker().getTradingWindow(e.getClickedInventory());
@@ -340,130 +417,170 @@ public class TradingWindow implements Listener {
                     e.setCancelled(true);
                 }
             }
+        } else if(dm.isPlayerCurrentlyDealing(p)) {
+            TradingWindow tw = dm.getTradingWindowByPlayer(p);
+            if(tw.playerAcceptedDeal || tw.oppositeAcceptedDeal) {
+                if(e.isShiftClick())
+                    e.setCancelled(true);
+            } else if(e.isShiftClick()) {
+                Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), new Runnable() {
+                    @Override
+                    public void run() {
+                        tw.handleSaveShiftClick(tw, p.equals(tw.opposite), p);
+                    }
+                }, 1);
+                tw.refreshInventorySwitch();
+            }
         }
     }
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
-        if(!Main.getPlugin().getDealMaker().isInventoryInList(e.getInventory())) return;
-        TradingWindow tw = Main.getPlugin().getDealMaker().getTradingWindow(e.getInventory());
-        if(e.getPlayer().equals(tw.player) && !tw.paidAfterClose) {
-            tw.oppositeInventory.close();
-        } else if(!tw.paidAfterClose) {
-            tw.playerInventory.close();
-        }
-
-        if(!tw.paidAfterClose) {
-            if(tw.oppositeAcceptedDeal && tw.playerAcceptedDeal) {
-                // Both accepted the deal and the items to deal get flipped
-
-                tw.paidAfterClose = true;
-                // Check, if the items already got moved back to the inventory
-                for(int i = 0; i < ROWS * 9; i++) {
-                    if(isOwnField(i)) {
-                        if(tw.playerInventory.getItem(i) != null)
-                            tw.opposite.getInventory().addItem(tw.playerInventory.getItem(i));
-                        if(tw.oppositeInventory.getItem(i) != null)
-                            tw.player.getInventory().addItem(tw.oppositeInventory.getItem(i));
-                    }
-                }
-                tw.player.playSound(tw.player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
-                tw.opposite.playSound(tw.opposite.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
-            } else {
-                // Deal got declined, both players get their own items back
-
-                tw.paidAfterClose = true;
-                for(int i = 0; i < ROWS * 9; i++) {
-                    if(isOwnField(i)) {
-                        if(tw.playerInventory.getItem(i) != null)
-                            tw.player.getInventory().addItem(tw.playerInventory.getItem(i));
-                        if(tw.oppositeInventory.getItem(i) != null)
-                            tw.opposite.getInventory().addItem(tw.oppositeInventory.getItem(i));
-                    }
-                }
-
-                tw.player.playSound(tw.player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1.0f, 1.0f);
-                tw.opposite.playSound(tw.opposite.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1.0f, 1.0f);
-
-                tw.player.sendMessage(Main.PREFIX + "You declined the deal with " + tw.opposite.getName() +
-                        " by closing your inventory!");
-                tw.opposite.sendMessage(Main.PREFIX + tw.player.getName() + " declined the deal!");
-            }
-            Main.getPlugin().getDealMaker().removeTradingWindow(tw);
-        }
-    }
-
-    @EventHandler
-    public void onInventoryMoveItem(InventoryMoveItemEvent e) {
         DealMaker dm = Main.getPlugin().getDealMaker();
-        if(dm.isInventoryInList(e.getDestination())) {
-            // Moving item to trade inventory
-            TradingWindow tw = dm.getTradingWindow(e.getDestination());
-            if(tw.playerAcceptedDeal || tw.oppositeAcceptedDeal) {
-                // One player accepted the deal, should prevent moving items
-                e.setCancelled(true);
-            } else {
-                // Checking item movement
-                for(int i = 0; i < ROWS * 9; i++) {
-                    ItemStack itemToChange = e.getDestination().getItem(i);
-                    boolean isOpponent = tw.oppositeInventory.equals(e.getDestination());
-                    int indexToCompare = translateOpponentSlotIndexToOwnSlotIndex(i);
-                    Inventory inventoryToCompare = isOpponent ? tw.playerInventory : tw.oppositeInventory;
-                    int originalAmount = inventoryToCompare.getItem(indexToCompare).getAmount();
-                    if(isOpponentsField(i) &&
-                            itemToChange.getAmount() != originalAmount) {
-                        // If condition above: Compare amount of opponent field's amount with opponent's own field
-                        // Notice: Bad O-Notation! O=n^2
-                        // Player inserted item to a wrong slot by shift clicking
-                        int amount = itemToChange.getAmount() - originalAmount;
-                        for(int j = 0; j < ROWS * 9; j++) {
-                            ItemStack itemSlotToUse = e.getDestination().getItem(j);
-                            // Checking for the next empty slot in own trading slots to insert the glass panes there
-                            if(isOwnField(j)) {
-                                if(itemSlotToUse == null ||
-                                        itemSlotToUse.getType()
-                                                .equals(itemToChange.getType())) {
-                                    // Found empty slot or slot with same material in payer's own trading slots
-                                    ItemStack itemStack = itemToChange.clone();
-                                    if(amount + e.getDestination().getItem(j).getAmount() >
-                                            e.getDestination().getItem(j).getMaxStackSize()) {
-                                        int tempAmount = (itemToChange.getMaxStackSize() - itemToChange.getAmount());
-                                        ItemStack maxStack = itemToChange.clone();
-                                        maxStack.setAmount(maxStack.getMaxStackSize());
-                                        e.getDestination().setItem(j, maxStack);
-                                        amount -= tempAmount;
-                                    } else {
-                                        // Item slot is empty, placing the itemStack to own trade slot
-                                        itemStack.setAmount(amount);
-                                        e.getDestination().setItem(j, itemStack);
-                                        itemToChange.setAmount(originalAmount); // original slot to original amount again
-                                        amount = 0;
-                                    }
-                                }
-                            }
-                        }
-                        if(amount != 0) {
-                            // When no slot is available for item, just add it back to sender's inventory
-                            ItemStack toGive = itemToChange.clone();
-                            toGive.setAmount(amount);
-                            e.getSource().addItem(toGive);
-                            amount = 0;
-                            itemToChange.setAmount(originalAmount);
+        if(dm.isInventoryInList(e.getInventory())) {
+            TradingWindow tw = dm.getTradingWindowByPlayer((Player) e.getPlayer());
+
+            Player p = tw.player;
+            Player o = tw.opposite;
+
+            if(!tw.paidAfterClose) {
+                tw.paidAfterClose = true;
+                if(tw.playerInventory.getViewers().contains(tw.player))
+                    tw.playerInventory.close();
+                if(tw.oppositeInventory.getViewers().contains(tw.opposite))
+                    tw.oppositeInventory.close();
+                if(tw.oppositeAcceptedDeal && tw.playerAcceptedDeal) {
+                    // Both accepted the deal and the items to deal get flipped
+
+                    // Check, if the items already got moved back to the inventory
+                    for(int i = 0; i < ROWS * 9; i++) {
+                        if(isOwnField(i)) {
+                            if(tw.playerInventory.getItem(i) != null)
+                                tw.opposite.getInventory().addItem(tw.playerInventory.getItem(i));
+                            if(tw.oppositeInventory.getItem(i) != null)
+                                tw.player.getInventory().addItem(tw.oppositeInventory.getItem(i));
                         }
                     }
-                    tw.refreshInventorySwitch();
+                    p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
+                    o.playSound(o.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
+
+                    dm.removeTradingWindow(tw);
+                } else {
+                    // Deal got declined, both players get their own items back
+                    for(int i = 0; i < ROWS * 9; i++) {
+                        if(isOwnField(i)) {
+                            if(tw.playerInventory.getItem(i) != null)
+                                tw.player.getInventory().addItem(tw.playerInventory.getItem(i));
+                            if(tw.oppositeInventory.getItem(i) != null)
+                                tw.opposite.getInventory().addItem(tw.oppositeInventory.getItem(i));
+                        }
+                    }
+
+                    p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.0f, 1.0f);
+                    o.playSound(o.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.0f, 1.0f);
+
+                    p.sendMessage(Main.PREFIX + "You declined the deal with " + o.getName() +
+                            " by closing your inventory!");
+                    o.sendMessage(Main.PREFIX + p.getName() + " declined the deal!");
+                    dm.removeTradingWindow(tw);
                 }
             }
-        } else if(dm.isInventoryInList(e.getSource())) {
-            // Moving item out of trade inventory
-            // Should be working, because wrong item steals should be protected by ClickEvent
-            // Shift click should only work at own item slot
-            // Maybe hacks can bypass it, be aware of it!
-
-            TradingWindow tw = dm.getTradingWindow(e.getSource());
-            tw.refreshInventorySwitch();
         }
     }
+
+//    @EventHandler
+//    public void onInventoryMoveItem(InventoryMoveItemEvent e) {
+//        DealMaker dm = Main.getPlugin().getDealMaker();
+//        if(dm.isInventoryInList(e.getDestination())) {
+//            // Moving item to trade inventory
+//            TradingWindow tw = dm.getTradingWindow(e.getDestination());
+//            if(tw.playerAcceptedDeal || tw.oppositeAcceptedDeal) {
+//                // One player accepted the deal, should prevent moving items
+//                e.setCancelled(true);
+//            } else {
+//                // Checking item movement
+//                for(int i = 0; i < ROWS * 9; i++) {
+//                    ItemStack itemToChange = e.getDestination().getItem(i);
+//                    boolean isOpponent = tw.oppositeInventory.equals(e.getDestination());
+//                    int indexToCompare = translateOpponentSlotIndexToOwnSlotIndex(i);
+//                    Inventory inventoryToCompare = isOpponent ? tw.playerInventory : tw.oppositeInventory;
+//                    int originalAmount = inventoryToCompare.getItem(indexToCompare).getAmount();
+//                    if(isOpponentsField(i) &&
+//                            itemToChange.getAmount() != originalAmount) {
+//                        // If condition above: Compare amount of opponent field's amount with opponent's own field
+//                        // Notice: Bad O-Notation! O=n^2
+//                        // Player inserted item to a wrong slot by shift clicking
+//                        int amount = itemToChange.getAmount() - originalAmount;
+//                        for(int j = 0; j < ROWS * 9; j++) {
+//                            ItemStack itemSlotToUse = e.getDestination().getItem(j);
+//                            // Checking for the next empty slot in own trading slots to insert the glass panes there
+//                            if(isOwnField(j)) {
+//                                if(itemSlotToUse == null ||
+//                                        itemSlotToUse.getType()
+//                                                .equals(itemToChange.getType())) {
+//                                    // Found empty slot or slot with same material in payer's own trading slots
+//                                    ItemStack itemStack = itemToChange.clone();
+//                                    if(amount + e.getDestination().getItem(j).getAmount() >
+//                                            e.getDestination().getItem(j).getMaxStackSize()) {
+//                                        int tempAmount = (itemToChange.getMaxStackSize() - itemToChange.getAmount());
+//                                        ItemStack maxStack = itemToChange.clone();
+//                                        maxStack.setAmount(maxStack.getMaxStackSize());
+//                                        e.getDestination().setItem(j, maxStack);
+//                                        amount -= tempAmount;
+//                                    } else {
+//                                        // Item slot is empty, placing the itemStack to own trade slot
+//                                        itemStack.setAmount(amount);
+//                                        e.getDestination().setItem(j, itemStack);
+//                                        itemToChange.setAmount(originalAmount); // original slot to original amount again
+//                                        amount = 0;
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        if(amount != 0) {
+//                            // When no slot is available for item, just add it back to sender's inventory
+//                            ItemStack toGive = itemToChange.clone();
+//                            toGive.setAmount(amount);
+//                            e.getSource().addItem(toGive);
+//                            amount = 0;
+//                            itemToChange.setAmount(originalAmount);
+//                        }
+//                    }
+//                    tw.refreshInventorySwitch();
+//                }
+//            }
+//        } else if(dm.isInventoryInList(e.getSource())) {
+//            // Moving item out of trade inventory
+//            // Should be working, because wrong item steals should be protected by ClickEvent
+//            // Shift click should only work at own item slot
+//            // Maybe hacks can bypass it, be aware of it!
+//
+//            TradingWindow tw = dm.getTradingWindow(e.getSource());
+//            tw.refreshInventorySwitch();
+//        }
+//    }
+
+//    @EventHandler
+//    public void onInventoryMove(InventoryMoveItemEvent e) {
+//        System.out.println("Someone moved an item!");
+//        DealMaker dm = Main.getPlugin().getDealMaker();
+//        if(dm.isInventoryInList(e.getSource())) {
+//            TradingWindow tw = dm.getTradingWindow(e.getSource());
+//            if(tw.oppositeAcceptedDeal || tw.playerAcceptedDeal) {
+//                e.setCancelled(true);
+//            } else {
+//                // TODO
+//            }
+//        } else if(dm.isInventoryInList(e.getDestination())) {
+//            TradingWindow tw = dm.getTradingWindow(e.getDestination());
+//            System.out.println("Found inventory source!");
+//            if(tw.oppositeAcceptedDeal || tw.playerAcceptedDeal) {
+//                e.setCancelled(true);
+//            } else {
+//                // TODO
+//            }
+//        }
+//    }
 
     @EventHandler
     public void onInventoryDrag(InventoryDragEvent e) {
