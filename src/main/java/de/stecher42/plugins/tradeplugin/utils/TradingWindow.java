@@ -391,10 +391,20 @@ public class TradingWindow implements Listener {
                     // Check, if the items already got moved back to the inventory
                     for(int i = 0; i < ROWS * 9; i++) {
                         if(isOwnField(i)) {
-                            if(tw.playerInventory.getItem(i) != null)
-                                tw.opposite.getInventory().addItem(tw.playerInventory.getItem(i));
-                            if(tw.oppositeInventory.getItem(i) != null)
-                                tw.player.getInventory().addItem(tw.oppositeInventory.getItem(i));
+                            if(tw.playerInventory.getItem(i) != null) {
+                                if(tw.opposite.getInventory().firstEmpty() > -1)
+                                    tw.opposite.getInventory().addItem(tw.playerInventory.getItem(i));
+                                else {
+                                    tw.opposite.getWorld().dropItem(tw.opposite.getLocation(), tw.playerInventory.getItem(i));
+                                }
+                            }
+                            if(tw.oppositeInventory.getItem(i) != null) {
+                                if(tw.player.getInventory().firstEmpty() > -1)
+                                    tw.player.getInventory().addItem(tw.oppositeInventory.getItem(i));
+                                else {
+                                    tw.player.getWorld().dropItem(tw.player.getLocation(), tw.oppositeInventory.getItem(i));
+                                }
+                            }
                         }
                     }
                     p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
@@ -405,10 +415,20 @@ public class TradingWindow implements Listener {
                     // Deal got declined, both players get their own items back
                     for(int i = 0; i < ROWS * 9; i++) {
                         if(isOwnField(i)) {
-                            if(tw.playerInventory.getItem(i) != null)
-                                tw.player.getInventory().addItem(tw.playerInventory.getItem(i));
-                            if(tw.oppositeInventory.getItem(i) != null)
-                                tw.opposite.getInventory().addItem(tw.oppositeInventory.getItem(i));
+                            if(tw.playerInventory.getItem(i) != null) {
+                                if(tw.player.getInventory().firstEmpty() > -1)
+                                    tw.player.getInventory().addItem(tw.playerInventory.getItem(i));
+                                else {
+                                    tw.player.getWorld().dropItem(tw.player.getLocation(), tw.playerInventory.getItem(i));
+                                }
+                            }
+                            if(tw.oppositeInventory.getItem(i) != null) {
+                                if(tw.opposite.getInventory().firstEmpty() > -1)
+                                    tw.opposite.getInventory().addItem(tw.oppositeInventory.getItem(i));
+                                else {
+                                    tw.opposite.getWorld().dropItem(tw.opposite.getLocation(), tw.oppositeInventory.getItem(i));
+                                }
+                            }
                         }
                     }
 
