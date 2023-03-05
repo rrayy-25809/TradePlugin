@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,6 +19,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class TradingWindow implements Listener {
     final int ROWS = 6;
@@ -222,11 +225,10 @@ public class TradingWindow implements Listener {
                 if(inv.getItem(i) != null)
                     result[pointer] = inv.getItem(i);
                 else
-                    result[pointer] = this.separator;
+                    result[pointer] = null;
                 pointer++;
             }
         }
-        System.out.println("projectToItemField(1) is done");
         return result;
     }
 
@@ -235,24 +237,85 @@ public class TradingWindow implements Listener {
         for(int i = 0; i < ROWS * 9; i++) {
             if(toPlayersInventory) {
                 if(isOpponentsField(i)) {
-                    this.playerInventory.setItem(i, playerItems[pointer]);
+                    if(playerItems[pointer] != null) {
+                        ItemStack itemStack = playerItems[pointer].clone();
+                        ItemMeta im = itemStack.getItemMeta();
+                        ArrayList<String> meta = new ArrayList<String>();
+                        meta.add("§r§lDeal partner's ");
+                        meta.add("§r§litem");
+                        im.setLore(meta);
+                        itemStack.setItemMeta(im);
+                        this.playerInventory.setItem(i, itemStack);
+                    } else {
+                        this.playerInventory.setItem(i, this.separator);
+                    }
                     pointer++;
                 }
             } else {
                 if(isOpponentsField(i)) {
-                    this.oppositeInventory.setItem(i, playerItems[pointer]);
+                    if(playerItems[pointer] != null) {
+                        ItemStack itemStack = playerItems[pointer].clone();
+                        ItemMeta im = itemStack.getItemMeta();
+                        ArrayList<String> meta = new ArrayList<String>();
+                        meta.add("§r§lDeal partner's ");
+                        meta.add("§r§litem");
+                        im.setLore(meta);
+                        itemStack.setItemMeta(im);
+                        this.oppositeInventory.setItem(i, itemStack);
+                    } else {
+                        this.oppositeInventory.setItem(i, this.separator);
+                    }
                     pointer++;
                 }
             }
         }
-        System.out.println("projectToOpponentField(2) is done");
     }
 
-    private void refreshInventorySwitch() {
+    private void _refreshInventorySwitchAsyncHelper() {
+        // Helper method, submethoded to get calles async with some delay to wait, until the item got stored in inv
+
         this.playerSlots = this.projectToItemField(this.playerInventory);
         this.projectToOpponentField(this.playerSlots, false);
         this.oppositeSlots = this.projectToItemField(this.oppositeInventory);
         this.projectToOpponentField(this.oppositeSlots, true);
+    }
+
+    private void refreshInventorySwitch() {
+        //Just callingg the _refreshInventorySwitchAsyncHelper() method with some async delay to wait for item store
+
+        TradingWindow tw = this;
+        Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), new Runnable() {
+            @Override
+            public void run() {
+                tw._refreshInventorySwitchAsyncHelper();
+            }
+        }, 4);
+    }
+
+    private int translateOpponentSlotIndexToOwnSlotIndex(int index, boolean invert) {
+        // invert parameter makes the method to a "translateOwnSlotIndexToOpponentSlotIndex()-method
+        int opponentSlot = 0;
+        int ownSlot = -1;
+        for(int i = 0; i < ROWS * 9; i++) {
+            if((!invert && isOpponentsField(i)) || (invert && isOwnField(i)) && i < index) {
+                opponentSlot++;
+            }
+        }
+        for(int i = 0; i < ROWS * 9; i++) {
+            if((!invert && isOwnField(i)) || (invert && isOpponentsField(i)) && opponentSlot > 0) {
+                opponentSlot--;
+                ownSlot = i;
+            }
+        }
+        return ownSlot;
+    }
+
+    private int translateOpponentSlotIndexToOwnSlotIndex(int index) {
+        return translateOpponentSlotIndexToOwnSlotIndex(index, false);
+    }
+
+    private int translateOwnSlotIndexToOpponentSlotIndex(int index) {
+        return translateOpponentSlotIndexToOwnSlotIndex(index, true);
     }
 
     // --- EventHandlers
@@ -261,9 +324,11 @@ public class TradingWindow implements Listener {
     public void onInventoryClick(InventoryClickEvent e) {
         if(!(e.getWhoClicked() instanceof Player)) return;
         Player p = (Player) e.getWhoClicked();
+        DealMaker dm = Main.getPlugin().getDealMaker();
 
         if(Main.getPlugin().getDealMaker().isInventoryInList(e.getClickedInventory())) {
             TradingWindow tw = Main.getPlugin().getDealMaker().getTradingWindow(e.getClickedInventory());
+
             if(e.getClickedInventory().equals(tw.playerInventory)) {
                 if(isPersonalTradeAccepmentField(e.getSlot())) {
                     // Player toggles deal status
@@ -274,12 +339,6 @@ public class TradingWindow implements Listener {
                     if(tw.playerAcceptedDeal || tw.oppositeAcceptedDeal)
                         e.setCancelled(true);
                     tw.refreshInventorySwitch();
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), new Runnable() {
-                        @Override
-                        public void run() {
-                            tw.refreshInventorySwitch();
-                        }
-                    }, 5);
                 } else {
                     e.setCancelled(true);
                 }
@@ -295,71 +354,87 @@ public class TradingWindow implements Listener {
                     else
                         e.setCancelled(false);
                     tw.refreshInventorySwitch();
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), new Runnable() {
-                        @Override
-                        public void run() {
-                            tw.refreshInventorySwitch();
-                        }
-                    }, 5);
                 } else {
                     e.setCancelled(true);
+                }
+            }
+        } else if(dm.isPlayerCurrentlyDealing(p)) {
+            TradingWindow tw = dm.getTradingWindowByPlayer(p);
+            if(tw.playerAcceptedDeal || tw.oppositeAcceptedDeal) {
+                if(e.isShiftClick())
+                    e.setCancelled(true);
+            } else if(e.isShiftClick()) {
+                tw.refreshInventorySwitch();
+            }
+        }
+    }
+
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent e) {
+        DealMaker dm = Main.getPlugin().getDealMaker();
+        if(dm.isInventoryInList(e.getInventory())) {
+            TradingWindow tw = dm.getTradingWindowByPlayer((Player) e.getPlayer());
+
+            Player p = tw.player;
+            Player o = tw.opposite;
+
+            if(!tw.paidAfterClose) {
+                tw.paidAfterClose = true;
+                if(tw.playerInventory.getViewers().contains(tw.player))
+                    tw.playerInventory.close();
+                if(tw.oppositeInventory.getViewers().contains(tw.opposite))
+                    tw.oppositeInventory.close();
+                if(tw.oppositeAcceptedDeal && tw.playerAcceptedDeal) {
+                    // Both accepted the deal and the items to deal get flipped
+
+                    // Check, if the items already got moved back to the inventory
+                    for(int i = 0; i < ROWS * 9; i++) {
+                        if(isOwnField(i)) {
+                            if(tw.playerInventory.getItem(i) != null)
+                                tw.opposite.getInventory().addItem(tw.playerInventory.getItem(i));
+                            if(tw.oppositeInventory.getItem(i) != null)
+                                tw.player.getInventory().addItem(tw.oppositeInventory.getItem(i));
+                        }
+                    }
+                    p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
+                    o.playSound(o.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
+
+                    dm.removeTradingWindow(tw);
+                } else {
+                    // Deal got declined, both players get their own items back
+                    for(int i = 0; i < ROWS * 9; i++) {
+                        if(isOwnField(i)) {
+                            if(tw.playerInventory.getItem(i) != null)
+                                tw.player.getInventory().addItem(tw.playerInventory.getItem(i));
+                            if(tw.oppositeInventory.getItem(i) != null)
+                                tw.opposite.getInventory().addItem(tw.oppositeInventory.getItem(i));
+                        }
+                    }
+
+                    p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.0f, 1.0f);
+                    o.playSound(o.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.0f, 1.0f);
+
+                    p.sendMessage(Main.PREFIX + "You declined the deal with " + o.getName() +
+                            " by closing your inventory!");
+                    o.sendMessage(Main.PREFIX + p.getName() + " declined the deal!");
+                    dm.removeTradingWindow(tw);
                 }
             }
         }
     }
 
     @EventHandler
-    public void onInventoryClose(InventoryCloseEvent e) {
-        if(!Main.getPlugin().getDealMaker().isInventoryInList(e.getInventory())) return;
-        TradingWindow tw = Main.getPlugin().getDealMaker().getTradingWindow(e.getInventory());
-        if(e.getPlayer().equals(tw.player) && !tw.paidAfterClose) {
-            tw.oppositeInventory.close();
-        } else if(!tw.paidAfterClose) {
-            tw.playerInventory.close();
-        }
-
-        if(tw.oppositeAcceptedDeal && tw.playerAcceptedDeal) {
-            // Both accepted the deal and the items to deal get flipped
-
-            if(!tw.paidAfterClose) {
-                tw.paidAfterClose = true;
-                // Check, if the items already got moved back to the inventory
-                for(int i = 0; i < ROWS * 9; i++) {
-                    if(isOwnField(i)) {
-                        if(tw.playerInventory.getItem(i) != null)
-                            tw.opposite.getInventory().addItem(tw.playerInventory.getItem(i));
-                        if(tw.oppositeInventory.getItem(i) != null)
-                            tw.player.getInventory().addItem(tw.oppositeInventory.getItem(i));
-                    }
-                }
-                tw.player.playSound(tw.player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
-                tw.opposite.playSound(tw.opposite.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
+    public void onInventoryDrag(InventoryDragEvent e) {
+        DealMaker dm = Main.getPlugin().getDealMaker();
+        if(dm.isInventoryInList(e.getInventory())) {
+            TradingWindow tw = dm.getTradingWindow(e.getInventory());
+            if(tw.playerAcceptedDeal || tw.oppositeAcceptedDeal) {
+                e.setCancelled(true);
+            } else {
+                tw.refreshInventorySwitch();
             }
-        } else {
-            // Deal got declined, both players get their own items back
-
-            if(!tw.paidAfterClose) {
-                tw.paidAfterClose = true;
-                for(int i = 0; i < ROWS * 9; i++) {
-                    if(isOwnField(i)) {
-                        if(tw.playerInventory.getItem(i) != null)
-                            tw.player.getInventory().addItem(tw.playerInventory.getItem(i));
-                        if(tw.oppositeInventory.getItem(i) != null)
-                            tw.opposite.getInventory().addItem(tw.oppositeInventory.getItem(i));
-                    }
-                }
-
-                tw.player.playSound(tw.player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1.0f, 1.0f);
-                tw.opposite.playSound(tw.opposite.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1.0f, 1.0f);
-            }
-
-//                tw.player.sendMessage(Main.PREFIX + "You declined the deal with " + tw.opposite.getName() +
-//                        " by closing your inventory!");
-//                tw.opposite.sendMessage(Main.PREFIX + tw.player.getName() + " declined the deal!");
-                Main.getPlugin().getDealMaker().removeTradingWindow(tw);
-
         }
     }
-
 
 }
