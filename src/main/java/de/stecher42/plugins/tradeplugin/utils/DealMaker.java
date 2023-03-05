@@ -2,6 +2,7 @@ package de.stecher42.plugins.tradeplugin.utils;
 
 import de.stecher42.plugins.tradeplugin.main.Main;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
@@ -13,17 +14,31 @@ public class DealMaker {
 
     public boolean makeTradeOffer(Player owner, Player target) {
         if(owner.getUniqueId().equals(target.getUniqueId())) {
-            owner.sendMessage(Main.PREFIX + "You can't trade with yourself!");
+            owner.sendMessage(Main.PREFIX + "§cYou can't trade with yourself!");
             return false;
         } else if(pairs.containsKey(owner.getUniqueId())) {
-            owner.sendMessage(Main.PREFIX + "You already sent a trade request to " +
+            owner.sendMessage(Main.PREFIX + "§cYou already sent a trade request to §6" +
                     pairs.get(owner.getUniqueId()).getName() +
-                    "! Please cancel the trade, by using /trade cancel first,");
+                    "§c! Please cancel the trade, by using §8/trade cancel§c first,");
             return false;
         } else {
             pairs.put(owner.getUniqueId(), target);
-            target.sendMessage(Main.PREFIX + "You got a new trade offer by " + owner.getName() +
-                    "! Use /trade accept <Name>, to deal.");
+            target.sendMessage(Main.PREFIX + "You got a new trade offer by §6" + owner.getName() +
+                    "§r! Use §8/trade accept <Name>§r, to deal.");
+            target.playSound(target.getLocation(), Sound.ITEM_GOAT_HORN_SOUND_3, 1.0f, 1.0f);
+            owner.playSound(owner.getLocation(), Sound.ENTITY_VILLAGER_YES, 1.0f, 1.0f);
+            Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), new Runnable() {
+                @Override
+                public void run() {
+                    Player opponent = Main.getPlugin().getDealMaker().cancelTrade(owner);
+                    if(opponent != null) {
+                        opponent.sendMessage("The trade request by §6" + owner.getName() + "§r expired!");
+                        opponent.playSound(opponent.getLocation(), Sound.ENTITY_RAVAGER_CELEBRATE, 1.0f, 1.0f);
+                        owner.sendMessage("Your trade request to §6" + opponent.getName() + "§r expired!");
+                        owner.playSound(owner.getLocation(), Sound.ENTITY_WARDEN_HURT, 1.0f, 1.0f);
+                    }
+                }
+            }, 20L * 60 * Main.getPlugin().getConfigValues().TIME_TRADING_REQUEST_SURVIVES);
             return true;
         }
     }
@@ -68,10 +83,20 @@ public class DealMaker {
         }
     }
 
-    public void cancelOwnTrade(Player owner) {
+    public Player cancelTrade(Player owner) {
+        // returns opponent player
         if(pairs.containsKey(owner.getUniqueId())) {
             Player opposite = pairs.get(owner.getUniqueId());
             pairs.remove(owner.getUniqueId());
+            return opposite;
+        } else {
+            return null;
+        }
+    }
+
+    public void cancelOwnTrade(Player owner) {
+        Player opposite = cancelTrade(owner);
+        if(opposite != null) {
             owner.sendMessage(Main.PREFIX + "You cancelled your trade with " + opposite.getName() + "!");
             opposite.sendMessage(Main.PREFIX + owner.getName() + " canceled the trade with you.");
         } else {
@@ -118,18 +143,22 @@ public class DealMaker {
     }
 
     public boolean isInventoryInList(Inventory inv) {
-        for(TradingWindow c : currentDealInvs) {
-            if(inv.equals(c.playerInventory) || inv.equals(c.oppositeInventory)) {
-                return true;
+        if(inv != null) {
+            for (TradingWindow c : currentDealInvs) {
+                if (inv.equals(c.playerInventory) || inv.equals(c.oppositeInventory)) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
     public TradingWindow getTradingWindow(Inventory inv) {
-        for(TradingWindow c : currentDealInvs) {
-            if(inv.equals(c.playerInventory) || inv.equals(c.oppositeInventory))
-                return c;
+        if(inv != null) {
+            for (TradingWindow c : currentDealInvs) {
+                if (inv.equals(c.playerInventory) || inv.equals(c.oppositeInventory))
+                    return c;
+            }
         }
         return null;
     }

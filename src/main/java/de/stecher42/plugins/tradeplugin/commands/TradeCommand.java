@@ -17,8 +17,8 @@ public class TradeCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
         if(sender instanceof Player) {
-            final String WRONG_USAGE = Main.PREFIX + "Wrong usage of the command /trade! Please use /trade <Name> or " +
-                    "/trade accept, to accept an incoming trade.";
+            final String WRONG_USAGE = Main.PREFIX + "§cWrong usage of the command /trade! Please use §6/trade <Name>§c or " +
+                    "§6/trade accept§c, to accept an incoming trade.";
 
             Player p = (Player) sender;
             if(p.hasPermission("trade.trade")) {
@@ -35,10 +35,13 @@ public class TradeCommand implements CommandExecutor {
                         Player opposite = Bukkit.getPlayer(args[0]);
                         boolean success = dm.makeTradeOffer(p, opposite);
                         if(success)
-                            p.sendMessage(String.format("%sThe trade request was now send to %s!", Main.PREFIX, args[0]));
+                            p.sendMessage(String.format("%s§aThe trade request was now sent to §6%s!", Main.PREFIX, args[0]));
+                    } else if(args[0].equalsIgnoreCase("reload") && p.hasPermission("trade.reload")) {
+                        Main.getPlugin().reloadConfig();
+                        p.sendMessage(Main.PREFIX + "Reloaded the config!");
                     } else {
-                        p.sendMessage(String.format("%sCould not find a player with the name '%s'. Please use " +
-                                "/trade <Name> or /trade accept, to accept an incoming trade!", Main.PREFIX, args[0]));
+                        p.sendMessage(String.format("%s§cCould not find a player with the name §6'%s'§c. Please use " +
+                                "§6/trade <Name>§c or §6/trade accept§c, to accept an incoming trade!", Main.PREFIX, args[0]));
                     }
                 } else if(args.length == 2) {
                     if(args[0].equalsIgnoreCase("accept")) {
@@ -46,14 +49,14 @@ public class TradeCommand implements CommandExecutor {
                             dm.acceptTrade(p, Objects.requireNonNull(Bukkit.getPlayer(args[0])));
                             return true;
                         } else {
-                            p.sendMessage(String.format("%sCould not find a player with the name '%s'. Please use " +
-                                    "/trade <Name> or /trade accept, to accept an incoming trade!", Main.PREFIX, args[0]));
+                            p.sendMessage(String.format("%s§cCould not find a player with the name §6'%s'§c. Please use " +
+                                    "§6/trade <Name>§c or §6/trade accept§c, to accept an incoming trade!", Main.PREFIX, args[0]));
                         }
                     } else if(args[0].equalsIgnoreCase("deny")) {
                         if(Bukkit.getPlayer(args[1]) != null) {
                             dm.denyTrade(p, Objects.requireNonNull(Bukkit.getPlayer(args[1])));
                         } else {
-                            p.sendMessage(Main.PREFIX + "Could not find a player with that name!");
+                            p.sendMessage(Main.PREFIX + "§cCould not find a player with that name!");
                         }
                     }
                 } else {
@@ -63,7 +66,11 @@ public class TradeCommand implements CommandExecutor {
                 p.sendMessage(MessageStrings.NO_PERMISSION);
             }
         } else {
-            sender.sendMessage("You must be a player, to do this!");
+            if(args[0].equalsIgnoreCase("reload")) {
+                Main.getPlugin().reloadConfig();
+                sender.sendMessage("Reload the config!");
+            } else
+                sender.sendMessage("You must be a player, to do this!");
         }
         return true;
     }
