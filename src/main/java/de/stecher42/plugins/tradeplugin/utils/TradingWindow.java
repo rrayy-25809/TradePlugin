@@ -248,11 +248,25 @@ public class TradingWindow implements Listener {
         System.out.println("projectToOpponentField(2) is done");
     }
 
-    private void refreshInventorySwitch() {
+    private void _refreshInventorySwitchAsyncHelper() {
+        // Helper method, submethoded to get calles async with some delay to wait, until the item got stored in inv
+
         this.playerSlots = this.projectToItemField(this.playerInventory);
         this.projectToOpponentField(this.playerSlots, false);
         this.oppositeSlots = this.projectToItemField(this.oppositeInventory);
         this.projectToOpponentField(this.oppositeSlots, true);
+    }
+
+    private void refreshInventorySwitch() {
+        //Just callingg the _refreshInventorySwitchAsyncHelper() method with some async delay to wait for item store
+
+        TradingWindow tw = this;
+        Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), new Runnable() {
+            @Override
+            public void run() {
+                tw._refreshInventorySwitchAsyncHelper();
+            }
+        }, 4);
     }
 
     // --- EventHandlers
@@ -274,12 +288,6 @@ public class TradingWindow implements Listener {
                     if(tw.playerAcceptedDeal || tw.oppositeAcceptedDeal)
                         e.setCancelled(true);
                     tw.refreshInventorySwitch();
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), new Runnable() {
-                        @Override
-                        public void run() {
-                            tw.refreshInventorySwitch();
-                        }
-                    }, 5);
                 } else {
                     e.setCancelled(true);
                 }
@@ -295,12 +303,6 @@ public class TradingWindow implements Listener {
                     else
                         e.setCancelled(false);
                     tw.refreshInventorySwitch();
-                    Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), new Runnable() {
-                        @Override
-                        public void run() {
-                            tw.refreshInventorySwitch();
-                        }
-                    }, 5);
                 } else {
                     e.setCancelled(true);
                 }
@@ -318,10 +320,10 @@ public class TradingWindow implements Listener {
             tw.playerInventory.close();
         }
 
-        if(tw.oppositeAcceptedDeal && tw.playerAcceptedDeal) {
-            // Both accepted the deal and the items to deal get flipped
+        if(!tw.paidAfterClose) {
+            if(tw.oppositeAcceptedDeal && tw.playerAcceptedDeal) {
+                // Both accepted the deal and the items to deal get flipped
 
-            if(!tw.paidAfterClose) {
                 tw.paidAfterClose = true;
                 // Check, if the items already got moved back to the inventory
                 for(int i = 0; i < ROWS * 9; i++) {
@@ -334,11 +336,9 @@ public class TradingWindow implements Listener {
                 }
                 tw.player.playSound(tw.player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
                 tw.opposite.playSound(tw.opposite.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
-            }
-        } else {
-            // Deal got declined, both players get their own items back
+            } else {
+                // Deal got declined, both players get their own items back
 
-            if(!tw.paidAfterClose) {
                 tw.paidAfterClose = true;
                 for(int i = 0; i < ROWS * 9; i++) {
                     if(isOwnField(i)) {
@@ -351,13 +351,12 @@ public class TradingWindow implements Listener {
 
                 tw.player.playSound(tw.player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1.0f, 1.0f);
                 tw.opposite.playSound(tw.opposite.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1.0f, 1.0f);
+
+                tw.player.sendMessage(Main.PREFIX + "You declined the deal with " + tw.opposite.getName() +
+                        " by closing your inventory!");
+                tw.opposite.sendMessage(Main.PREFIX + tw.player.getName() + " declined the deal!");
             }
-
-//                tw.player.sendMessage(Main.PREFIX + "You declined the deal with " + tw.opposite.getName() +
-//                        " by closing your inventory!");
-//                tw.opposite.sendMessage(Main.PREFIX + tw.player.getName() + " declined the deal!");
-                Main.getPlugin().getDealMaker().removeTradingWindow(tw);
-
+            Main.getPlugin().getDealMaker().removeTradingWindow(tw);
         }
     }
 
