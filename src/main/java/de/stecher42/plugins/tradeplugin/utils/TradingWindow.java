@@ -465,5 +465,18 @@ public class TradingWindow implements Listener {
         }
     }
 
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent e) {
+        DealMaker dm = Main.getPlugin().getDealMaker();
+        if(dm.isInventoryInList(e.getInventory())) {
+            TradingWindow tw = dm.getTradingWindow(e.getInventory());
+            if(tw.playerAcceptedDeal || tw.oppositeAcceptedDeal) {
+                e.setCancelled(true);
+            } else {
+                tw.refreshInventorySwitch();
+            }
+        }
+    }
+
 
 }
