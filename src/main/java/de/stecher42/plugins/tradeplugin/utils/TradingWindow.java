@@ -276,6 +276,32 @@ public class TradingWindow implements Listener {
         }, 4);
     }
 
+    private int translateOpponentSlotIndexToOwnSlotIndex(int index, boolean invert) {
+        // invert parameter makes the method to a "translateOwnSlotIndexToOpponentSlotIndex()-method
+        int opponentSlot = 0;
+        int ownSlot = -1;
+        for(int i = 0; i < ROWS * 9; i++) {
+            if((!invert && isOpponentsField(i)) || (invert && isOwnField(i)) && i < index) {
+                opponentSlot++;
+            }
+        }
+        for(int i = 0; i < ROWS * 9; i++) {
+            if((!invert && isOwnField(i)) || (invert && isOpponentsField(i)) && opponentSlot > 0) {
+                opponentSlot--;
+                ownSlot = i;
+            }
+        }
+        return ownSlot;
+    }
+
+    private int translateOpponentSlotIndexToOwnSlotIndex(int index) {
+        return translateOpponentSlotIndexToOwnSlotIndex(index, false);
+    }
+
+    private int translateOwnSlotIndexToOpponentSlotIndex(int index) {
+        return translateOpponentSlotIndexToOwnSlotIndex(index, true);
+    }
+
     // --- EventHandlers
 
     @EventHandler
@@ -380,10 +406,16 @@ public class TradingWindow implements Listener {
                 // Checking item movement
                 for(int i = 0; i < ROWS * 9; i++) {
                     ItemStack itemToChange = e.getDestination().getItem(i);
-                    if((isFillerIndex(i) || isPersonalTradeAccepmentField(i) || isOpponentsAccepmentField(i)) &&
-                            itemToChange.getAmount() > 1) {
-                        // Player inserted glass pane to a wrong slot by shift clicking
-                        int amount = itemToChange.getAmount() - 1;
+                    boolean isOpponent = tw.oppositeInventory.equals(e.getDestination());
+                    int indexToCompare = translateOpponentSlotIndexToOwnSlotIndex(i);
+                    Inventory inventoryToCompare = isOpponent ? tw.playerInventory : tw.oppositeInventory;
+                    int originalAmount = inventoryToCompare.getItem(indexToCompare).getAmount();
+                    if(isOpponentsField(i) &&
+                            itemToChange.getAmount() != originalAmount) {
+                        // If condition above: Compare amount of opponent field's amount with opponent's own field
+                        // Notice: Bad O-Notation! O=n^2
+                        // Player inserted item to a wrong slot by shift clicking
+                        int amount = itemToChange.getAmount() - originalAmount;
                         for(int j = 0; j < ROWS * 9; j++) {
                             ItemStack itemSlotToUse = e.getDestination().getItem(j);
                             // Checking for the next empty slot in own trading slots to insert the glass panes there
@@ -404,7 +436,7 @@ public class TradingWindow implements Listener {
                                         // Item slot is empty, placing the itemStack to own trade slot
                                         itemStack.setAmount(amount);
                                         e.getDestination().setItem(j, itemStack);
-                                        e.getDestination().getItem(i).setAmount(1); // original slot to amount 1 again
+                                        itemToChange.setAmount(originalAmount); // original slot to original amount again
                                         amount = 0;
                                     }
                                 }
@@ -416,16 +448,20 @@ public class TradingWindow implements Listener {
                             toGive.setAmount(amount);
                             e.getSource().addItem(toGive);
                             amount = 0;
-                            itemToChange.setAmount(1);
+                            itemToChange.setAmount(originalAmount);
                         }
                     }
+                    tw.refreshInventorySwitch();
                 }
             }
         } else if(dm.isInventoryInList(e.getSource())) {
             // Moving item out of trade inventory
             // Should be working, because wrong item steals should be protected by ClickEvent
             // Shift click should only work at own item slot
-            // Maybe hacks can bypass it, be aware of itö
+            // Maybe hacks can bypass it, be aware of it!
+
+            TradingWindow tw = dm.getTradingWindow(e.getSource());
+            tw.refreshInventorySwitch();
         }
     }
 
