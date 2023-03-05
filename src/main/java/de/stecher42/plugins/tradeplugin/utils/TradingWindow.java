@@ -1,10 +1,7 @@
 package de.stecher42.plugins.tradeplugin.utils;
 
 import de.stecher42.plugins.tradeplugin.main.Main;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
@@ -77,6 +74,8 @@ public class TradingWindow implements Listener {
         player.openInventory(playerInventory);
         if(!this.paidAfterClose)
             oppositeDealPartner.openInventory(oppositeInventory);
+        player.playNote(player.getLocation(), Instrument.SNARE_DRUM, Note.natural(1, Note.Tone.D));
+        opposite.playNote(opposite.getLocation(), Instrument.SNARE_DRUM, Note.natural(1, Note.Tone.D));
 
     }
 
