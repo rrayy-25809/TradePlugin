@@ -241,8 +241,8 @@ public class TradingWindow implements Listener {
                         ItemStack itemStack = playerItems[pointer].clone();
                         ItemMeta im = itemStack.getItemMeta();
                         ArrayList<String> meta = new ArrayList<String>();
-                        meta.add("Deal partner's ");
-                        meta.add("item");
+                        meta.add("§r§lDeal partner's ");
+                        meta.add("§r§litem");
                         im.setLore(meta);
                         itemStack.setItemMeta(im);
                         this.playerInventory.setItem(i, itemStack);
@@ -257,8 +257,8 @@ public class TradingWindow implements Listener {
                         ItemStack itemStack = playerItems[pointer].clone();
                         ItemMeta im = itemStack.getItemMeta();
                         ArrayList<String> meta = new ArrayList<String>();
-                        meta.add("Deal partner's ");
-                        meta.add("item");
+                        meta.add("§r§lDeal partner's ");
+                        meta.add("§r§litem");
                         im.setLore(meta);
                         itemStack.setItemMeta(im);
                         this.oppositeInventory.setItem(i, itemStack);
@@ -318,61 +318,6 @@ public class TradingWindow implements Listener {
         return translateOpponentSlotIndexToOwnSlotIndex(index, true);
     }
 
-    private void handleSaveShiftClick(TradingWindow tw, boolean isOpposite, Player holder) {
-        Inventory destinationInventory = isOpposite ? tw.oppositeInventory : tw.playerInventory;
-        for(int i = 0; i < ROWS * 9; i++) {
-            ItemStack itemToChange = destinationInventory.getItem(i);
-            boolean isOpponent = tw.oppositeInventory.equals(destinationInventory);
-            int indexToCompare = translateOpponentSlotIndexToOwnSlotIndex(i);
-            Inventory inventoryToCompare = isOpponent ? tw.playerInventory : tw.oppositeInventory;
-            if(inventoryToCompare.getItem(indexToCompare) != null) {
-                int originalAmount = inventoryToCompare.getItem(indexToCompare).getAmount();
-                if(isOpponentsField(i) &&
-                        itemToChange.getAmount() != originalAmount) {
-                    // If condition above: Compare amount of opponent field's amount with opponent's own field
-                    // Notice: Bad O-Notation! O=n^2
-                    // Player inserted item to a wrong slot by shift clicking
-                    int amount = itemToChange.getAmount() - originalAmount;
-                    for(int j = 0; j < ROWS * 9; j++) {
-                        ItemStack itemSlotToUse = destinationInventory.getItem(j);
-                        // Checking for the next empty slot in own trading slots to insert the glass panes there
-                        if(isOwnField(j)) {
-                            if(itemSlotToUse == null ||
-                                    itemSlotToUse.getType()
-                                            .equals(itemToChange.getType())) {
-                                // Found empty slot or slot with same material in payer's own trading slots
-                                ItemStack itemStack = itemToChange.clone();
-                                if(amount + destinationInventory.getItem(j).getAmount() >
-                                        destinationInventory.getItem(j).getMaxStackSize()) {
-                                    int tempAmount = (itemToChange.getMaxStackSize() - itemToChange.getAmount());
-                                    ItemStack maxStack = itemToChange.clone();
-                                    maxStack.setAmount(maxStack.getMaxStackSize());
-                                    destinationInventory.setItem(j, maxStack);
-                                    amount -= tempAmount;
-                                } else {
-                                    // Item slot is empty, placing the itemStack to own trade slot
-                                    itemStack.setAmount(amount);
-                                    destinationInventory.setItem(j, itemStack);
-                                    itemToChange.setAmount(originalAmount); // original slot to original amount again
-                                    amount = 0;
-                                }
-                            }
-                        }
-                    }
-                    if(amount != 0) {
-                        // When no slot is available for item, just add it back to sender's inventory
-                        ItemStack toGive = itemToChange.clone();
-                        toGive.setAmount(amount);
-                        holder.getInventory().addItem(toGive);
-                        amount = 0;
-                        itemToChange.setAmount(originalAmount);
-                    }
-                }
-            }
-            tw.refreshInventorySwitch();
-        }
-    }
-
     // --- EventHandlers
 
     @EventHandler
@@ -419,12 +364,6 @@ public class TradingWindow implements Listener {
                 if(e.isShiftClick())
                     e.setCancelled(true);
             } else if(e.isShiftClick()) {
-//                Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        tw.handleSaveShiftClick(tw, p.equals(tw.opposite), p);
-//                    }
-//                }, 1);
                 tw.refreshInventorySwitch();
             }
         }
