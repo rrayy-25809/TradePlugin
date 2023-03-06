@@ -68,8 +68,6 @@ public class TradingWindow implements Listener {
         this.playerSlots = new ItemStack[slots];
         this.oppositeSlots = new ItemStack[slots];
 
-        System.out.println("TW-Slots: " + this.slots);
-
         DealMaker dm = Main.getPlugin().getDealMaker();
         dm.addTradingWindow(this);
         player.openInventory(playerInventory);
