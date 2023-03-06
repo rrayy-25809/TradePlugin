@@ -89,4 +89,12 @@ public final class Main extends JavaPlugin {
     public DealMaker getDealMaker() {
         return this.dealMaker;
     }
+
+    public MessageStrings getMessageStrings() {
+        return this.messageStrings;
+    }
+
+    public void reloadConfigValues() {
+        this.configValues = new ConfigValues(this.customConfigFile);
+    }
 }
