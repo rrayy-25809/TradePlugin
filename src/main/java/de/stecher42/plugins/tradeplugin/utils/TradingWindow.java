@@ -362,6 +362,8 @@ public class TradingWindow implements Listener {
             if(tw.playerAcceptedDeal || tw.oppositeAcceptedDeal) {
                 if(e.isShiftClick())
                     e.setCancelled(true);
+                else if(e.getClick().equals(ClickType.DOUBLE_CLICK)) // player double-clicks in own inventory
+                    e.setCancelled(true); // prevent stealing items from own slot field after trade accepted
             } else if(e.isShiftClick()) {
                 tw.refreshInventorySwitch();
             }
