@@ -183,4 +183,16 @@ public class DealMaker {
     public ArrayList<TradingWindow> getCurrentDealInvs() {
         return this.currentDealInvs;
     }
+
+    public void closeTrade(Player p) {
+        if(isPlayerCurrentlyDealing(p)) {
+
+        }
+    }
+
+    public void closeAllTrades() {
+        for(Player p : Bukkit.getOnlinePlayers()) {
+
+        }
+    }
 }

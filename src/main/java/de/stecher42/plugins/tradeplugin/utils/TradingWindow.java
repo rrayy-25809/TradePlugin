@@ -185,6 +185,77 @@ public class TradingWindow implements Listener {
             tw.playerInventory.close();
     }
 
+    public void closeTrade(Player player) {
+        DealMaker dm = Main.getPlugin().getDealMaker();
+        TradingWindow tw = this;
+
+        Player p = tw.player;
+        Player o = tw.opposite;
+
+        if(!tw.paidAfterClose) {
+            tw.paidAfterClose = true;
+            if(tw.playerInventory.getViewers().contains(tw.player))
+                tw.playerInventory.close();
+            if(tw.oppositeInventory.getViewers().contains(tw.opposite))
+                tw.oppositeInventory.close();
+            if(tw.oppositeAcceptedDeal && tw.playerAcceptedDeal) {
+                // Both accepted the deal and the items to deal get flipped
+
+                // Check, if the items already got moved back to the inventory
+                for(int i = 0; i < ROWS * 9; i++) {
+                    if(isOwnField(i)) {
+                        if(tw.playerInventory.getItem(i) != null) {
+                            if(tw.opposite.getInventory().firstEmpty() > -1)
+                                tw.opposite.getInventory().addItem(tw.playerInventory.getItem(i));
+                            else {
+                                tw.opposite.getWorld().dropItem(tw.opposite.getLocation(), tw.playerInventory.getItem(i));
+                            }
+                        }
+                        if(tw.oppositeInventory.getItem(i) != null) {
+                            if(tw.player.getInventory().firstEmpty() > -1)
+                                tw.player.getInventory().addItem(tw.oppositeInventory.getItem(i));
+                            else {
+                                tw.player.getWorld().dropItem(tw.player.getLocation(), tw.oppositeInventory.getItem(i));
+                            }
+                        }
+                    }
+                }
+                p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
+                o.playSound(o.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
+
+                dm.removeTradingWindow(tw);
+            } else {
+                // Deal got declined, both players get their own items back
+                for(int i = 0; i < ROWS * 9; i++) {
+                    if(isOwnField(i)) {
+                        if(tw.playerInventory.getItem(i) != null) {
+                            if(tw.player.getInventory().firstEmpty() > -1)
+                                tw.player.getInventory().addItem(tw.playerInventory.getItem(i));
+                            else {
+                                tw.player.getWorld().dropItem(tw.player.getLocation(), tw.playerInventory.getItem(i));
+                            }
+                        }
+                        if(tw.oppositeInventory.getItem(i) != null) {
+                            if(tw.opposite.getInventory().firstEmpty() > -1)
+                                tw.opposite.getInventory().addItem(tw.oppositeInventory.getItem(i));
+                            else {
+                                tw.opposite.getWorld().dropItem(tw.opposite.getLocation(), tw.oppositeInventory.getItem(i));
+                            }
+                        }
+                    }
+                }
+
+                p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.0f, 1.0f);
+                o.playSound(o.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.0f, 1.0f);
+
+                p.sendMessage(Main.PREFIX + "You declined the deal with " + o.getName() +
+                        " by closing your inventory!");
+                o.sendMessage(Main.PREFIX + p.getName() + " declined the deal!");
+                dm.removeTradingWindow(tw);
+            }
+        }
+    }
+
     // --- Slot checker
 
     private boolean isPersonalTradeAccepmentField(int index) {
