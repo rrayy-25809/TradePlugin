@@ -19,9 +19,10 @@ public class TradeCommand implements CommandExecutor {
         if(sender instanceof Player) {
             final String WRONG_USAGE = Main.PREFIX + "§cWrong usage of the command /trade! Please use §6/trade <Name>§c or " +
                     "§6/trade accept§c, to accept an incoming trade.";
+            final String GITHUB_URL = "§6https://https://github.com/Robby3St/TradePlugin/§r";
 
             Player p = (Player) sender;
-            if(p.hasPermission("trade.trade")) {
+            if(p.hasPermission("trade.trade") || p.hasPermission("trade.*")) {
                 DealMaker dm = Main.getPlugin().getDealMaker();
                 if(args.length == 1 && !args[0].replace(" ", "").equals("")) {
                     if(args[0].equalsIgnoreCase("accept")) {
@@ -39,6 +40,18 @@ public class TradeCommand implements CommandExecutor {
                     } else if(args[0].equalsIgnoreCase("reload") && p.hasPermission("trade.reload")) {
                         Main.getPlugin().reloadConfig();
                         p.sendMessage(Main.PREFIX + "Reloaded the config!");
+                    } else if(args[0].equalsIgnoreCase("author")) {
+                        p.sendMessage(Main.PREFIX + "§aAuthor of the trade plugin is §6Robby3St. §a" +
+                                "Find the plugin on §6GitHub: " + GITHUB_URL);
+                    } else if(args[0].equalsIgnoreCase("version") && p.hasPermission("trade.version")
+                            || p.hasPermission("trade.*")) {
+                        p.sendMessage(Main.PREFIX + "§aThe current used version of the pluin is: §6" +
+                                Main.getPlugin().getPluginMeta().getVersion() + ". §aYou can " +
+                                "check for original newer versions here: " +
+                                "§6GitHub: " + GITHUB_URL);
+                    } else if(args[0].equalsIgnoreCase("download")) {
+                        p.sendMessage(Main.PREFIX + "§aYou can download the original " +
+                                "trade plugin by Robby3St here: " + GITHUB_URL);
                     } else {
                         p.sendMessage(String.format("%s§cCould not find a player with the name §6'%s'§c. Please use " +
                                 "§6/trade <Name>§c or §6/trade accept§c, to accept an incoming trade!", Main.PREFIX, args[0]));

@@ -3,6 +3,8 @@ version: '${project.version}'
 main: de.stecher42.plugins.tradeplugin.main.Main
 api-version: 1.19
 description: A little Minecraft Paper Trade Plugin
+author: Robby3St
+website: https://https://github.com/Robby3St/TradePlugin/
 commands:
   trade:
       description: Lets you trade with another person
