@@ -18,7 +18,8 @@ public class MessageStrings {
     }
 
     private void createLanguageFile() {
-        languageFile = new File(Main.getPlugin().getDataFolder() + "/languages/en_us.yml", "config.yml");
+        languageFile = new File(Main.getPlugin().getDataFolder() + "/languages/",
+                Main.getPlugin().getConfigValues().LANGUAGE_VERSION + ".yml");
         if (!languageFile.exists()) {
             languageFile.getParentFile().mkdirs();
             try {
@@ -26,14 +27,13 @@ public class MessageStrings {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Main.getPlugin().saveResource("en_us", false);
         }
-//
-//        customConfig = new YamlConfiguration();
-//        try {
-//            customConfig.load(customConfigFile);
-//        } catch (IOException | InvalidConfigurationException e) {
-//            e.printStackTrace();
-//        }
+
+        languageFileConfiguration = new YamlConfiguration();
+        try {
+            languageFileConfiguration.load(languageFile);
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
     }
 }
