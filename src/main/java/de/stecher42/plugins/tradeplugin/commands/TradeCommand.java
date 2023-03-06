@@ -28,33 +28,49 @@ public class TradeCommand implements CommandExecutor {
                     if(args[0].equalsIgnoreCase("accept")) {
                         dm.acceptTrade(p);
                         return true;
+
+
                     } else if(args[0].equalsIgnoreCase("cancel")) {
                         dm.cancelOwnTrade(p);
+
+
                     } else if(args[0].equalsIgnoreCase("deny")) {
                         dm.denyTrade(p);
+
+
                     } else if(Bukkit.getPlayer(args[0]) != null) {
                         Player opposite = Bukkit.getPlayer(args[0]);
                         boolean success = dm.makeTradeOffer(p, opposite);
                         if(success)
                             p.sendMessage(String.format("%s§aThe trade request was now sent to §6%s!", Main.PREFIX, args[0]));
+
+
                     } else if(args[0].equalsIgnoreCase("reload") && p.hasPermission("trade.reload")) {
                         Main.getPlugin().reloadConfig();
                         p.sendMessage(Main.PREFIX + "Reloaded the config!");
+
+
                     } else if(args[0].equalsIgnoreCase("author")) {
                         p.sendMessage(Main.PREFIX + "§aAuthor of the trade plugin is §6Robby3St. §a" +
-                                "Find the plugin on §6GitHub: " + GITHUB_URL);
-                    } else if(args[0].equalsIgnoreCase("version") && p.hasPermission("trade.version")
-                            || p.hasPermission("trade.*")) {
+                                "Find the plugin on §6GitHub " + GITHUB_URL);
+
+
+                    } else if(args[0].equalsIgnoreCase("version") && (p.hasPermission("trade.version")
+                            || p.hasPermission("trade.*"))) {
                         p.sendMessage(Main.PREFIX + "§aThe current used version of the pluin is: §6" +
-                                Main.getPlugin().getPluginMeta().getVersion() + ". §aYou can " +
+                                Main.getPlugin().getDescription().getVersion() + ". §aYou can " +
                                 "check for original newer versions here: " +
-                                "§6GitHub: " + GITHUB_URL);
+                                "§6GitHub " + GITHUB_URL);
+
+
                     } else if(args[0].equalsIgnoreCase("download")) {
                         p.sendMessage(Main.PREFIX + "§aYou can download the original " +
                                 "trade plugin by Robby3St here: " + GITHUB_URL);
+
+
                     } else {
-                        p.sendMessage(String.format("%s§cCould not find a player with the name §6'%s'§c. Please use " +
-                                "§6/trade <Name>§c or §6/trade accept§c, to accept an incoming trade!", Main.PREFIX, args[0]));
+                        p.sendMessage(String.format("%s§cCould not find a player with the name §6'%s'. §cPlease use " +
+                                "§6/trade <Name>§c or §6/trade accept, §cto accept an incoming trade!", Main.PREFIX, args[0]));
                     }
                 } else if(args.length == 2) {
                     if(args[0].equalsIgnoreCase("accept")) {
@@ -62,9 +78,11 @@ public class TradeCommand implements CommandExecutor {
                             dm.acceptTrade(p, Objects.requireNonNull(Bukkit.getPlayer(args[0])));
                             return true;
                         } else {
-                            p.sendMessage(String.format("%s§cCould not find a player with the name §6'%s'§c. Please use " +
-                                    "§6/trade <Name>§c or §6/trade accept§c, to accept an incoming trade!", Main.PREFIX, args[0]));
+                            p.sendMessage(String.format("%s§cCould not find a player with the name §6'%s'. §cPlease use " +
+                                    "§6/trade <Name>§c or §6/trade accept, §cto accept an incoming trade!", Main.PREFIX, args[0]));
                         }
+
+
                     } else if(args[0].equalsIgnoreCase("deny")) {
                         if(Bukkit.getPlayer(args[1]) != null) {
                             dm.denyTrade(p, Objects.requireNonNull(Bukkit.getPlayer(args[1])));

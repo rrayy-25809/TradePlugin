@@ -8,5 +8,5 @@ website: https://https://github.com/Robby3St/TradePlugin/
 commands:
   trade:
       description: Lets you trade with another person
-      usage: /trade <Name> | /trade accept | /trade accept <Name> | /trade cancel | /trade deny | /trade deny <Name>
+      usage: /trade <Name> | /trade accept | /trade accept <Name> | /trade cancel | /trade deny | /trade deny <Name> | /trade author | /trade version | /trade download
       permission: trade.trade
