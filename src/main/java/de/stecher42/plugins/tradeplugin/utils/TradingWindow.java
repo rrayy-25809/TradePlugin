@@ -434,9 +434,13 @@ public class TradingWindow implements Listener {
                     p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.0f, 1.0f);
                     o.playSound(o.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.0f, 1.0f);
 
-                    p.sendMessage(Main.PREFIX + "You declined the deal with " + o.getName() +
-                            " by closing your inventory!");
-                    o.sendMessage(Main.PREFIX + p.getName() + " declined the deal!");
+                    boolean eventPlayerIsOpponent = e.getPlayer().equals(tw.opposite);
+                    final String YOU_DECLINED = Main.PREFIX + "You declined the deal with " + o.getName() +
+                            " by closing your inventory!";
+                    final String OTHER_DECLINED = Main.PREFIX + p.getName() + " declined the deal!";
+
+                    p.sendMessage(eventPlayerIsOpponent ? OTHER_DECLINED : YOU_DECLINED);
+                    o.sendMessage(eventPlayerIsOpponent ? YOU_DECLINED : OTHER_DECLINED);
                     dm.removeTradingWindow(tw);
                 }
             }
