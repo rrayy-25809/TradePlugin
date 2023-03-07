@@ -11,6 +11,7 @@ import java.util.*;
 public class DealMaker {
     private HashMap<UUID, Player> pairs = new HashMap<UUID, Player>(); // Owner saved as UUID in key
     private ArrayList<TradingWindow> currentDealInvs = new ArrayList<TradingWindow>();
+    private ArrayList<Player> cooldownRightClick = new ArrayList<Player>();
 
 
     public boolean makeTradeOffer(Player owner, Player target) {
@@ -193,5 +194,30 @@ public class DealMaker {
                 tw.closeTrade(p);
             }
         }
+    }
+
+    public boolean addPlayerToCooldown(Player p) {
+        if(!this.cooldownRightClick.contains(p)) {
+            // You can init a new request
+            this.cooldownRightClick.add(p);
+            Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), new Runnable() {
+                @Override
+                public void run() {
+                    cooldownRightClick.remove(p);
+                }
+            }, 20L);
+            return true;
+        } else {
+            // Player already sent request and needs to cool down
+            return false;
+        }
+    }
+
+    public boolean madePlayerARequest(Player p, Player acceptor) {
+        if(this.pairs.containsKey(p.getUniqueId())) {
+            if(this.pairs.get(p.getUniqueId()).equals(acceptor))
+                return true;
+        }
+        return false;
     }
 }
