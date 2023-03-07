@@ -39,20 +39,20 @@ public class DealMaker {
                     .append(LegacyComponentSerializer.legacySection()
                             .deserialize(Main.PREFIX + String.format(messageStrings.getTranslation(Translations.YOU_GOT_A_NEW_TRADE_OFFER) + " ", owner.getName())))
                     .append(
-                    Component.text("[").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.BOLD)
-            ).append(
-                    Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_ACCEPT)).color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD)
-                            .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/trade accept " + owner.getName()))
-                            .hoverEvent(Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_ACCEPT)).color(NamedTextColor.DARK_GRAY))
-            ).append(
-                    Component.text(" | ").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.BOLD)
-            ).append(
-                    Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_DENY)).color(NamedTextColor.RED).decorate(TextDecoration.BOLD)
-                            .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/trade deny " + owner.getName()))
-                            .hoverEvent(Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_DENY)).color(NamedTextColor.DARK_GRAY))
-            ).append(
-                    Component.text("]").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.BOLD)
-            ).toBuilder().build();
+                            Component.text("[").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.BOLD)
+                    ).append(
+                            Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_ACCEPT)).color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD)
+                                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/trade accept " + owner.getName()))
+                                    .hoverEvent(Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_ACCEPT)).color(NamedTextColor.DARK_GRAY))
+                    ).append(
+                            Component.text(" | ").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.BOLD)
+                    ).append(
+                            Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_DENY)).color(NamedTextColor.RED).decorate(TextDecoration.BOLD)
+                                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/trade deny " + owner.getName()))
+                                    .hoverEvent(Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_DENY)).color(NamedTextColor.DARK_GRAY))
+                    ).append(
+                            Component.text("]").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.BOLD)
+                    ).toBuilder().build();
 
             target.sendMessage(CHAT_BUTTON_COMPONENT);
             target.playSound(target.getLocation(), Sound.ITEM_GOAT_HORN_SOUND_3, 1.0f, 1.0f);
