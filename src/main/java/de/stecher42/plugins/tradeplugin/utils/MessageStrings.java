@@ -86,6 +86,8 @@ public class MessageStrings {
             this.translations.put(Translations.GOT_NO_REQUESTS_TO_DENY, "Du hast keine Handelsanfragen zum Ablehnen!");
             this.translations.put(Translations.YOU_ENABLED_USE_WITHOUT_PERMISSION, "Spieler können nun §6ohne explizite Berechtigung§r verhandeln.");
             this.translations.put(Translations.YOU_DISABLED_USE_WITHOUT_PERMISSION, "Spieler brauchen nun die Berechtigung §6trade.trade, §rum handeln zu können.");
+            this.translations.put(Translations.CHAT_BUTTON_ACCEPT, "Annehmen");
+            this.translations.put(Translations.CHAT_BUTTON_DENY, "Ablehnen");
         } else {
             // English translations
 
@@ -140,6 +142,8 @@ public class MessageStrings {
             this.translations.put(Translations.GOT_NO_REQUESTS_TO_DENY, "You got no trade requests to deny!");
             this.translations.put(Translations.YOU_ENABLED_USE_WITHOUT_PERMISSION, "You enabled the mode for using trades without permission!");
             this.translations.put(Translations.YOU_DISABLED_USE_WITHOUT_PERMISSION, "You disabled the mode for using trades without permission!");
+            this.translations.put(Translations.CHAT_BUTTON_ACCEPT, "Accept");
+            this.translations.put(Translations.CHAT_BUTTON_DENY, "Deny");
         }
     }
 
