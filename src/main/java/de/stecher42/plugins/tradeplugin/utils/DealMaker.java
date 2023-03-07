@@ -9,6 +9,7 @@ import net.kyori.adventure.text.event.HoverEventSource;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -34,40 +35,26 @@ public class DealMaker {
         } else {
             pairs.put(owner.getUniqueId(), target);
 
-            final Component ACCEPT_CLICK_EVENT = Component.empty().clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/trade accept " + owner.getName()));
-            final Component DENY_CLICK_EVENT = Component.empty().clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/trade deny " + owner.getName()));
+            final Component CHAT_BUTTON_COMPONENT = Component.empty()
+                    .append(LegacyComponentSerializer.legacySection()
+                            .deserialize(Main.PREFIX + String.format(messageStrings.getTranslation(Translations.YOU_GOT_A_NEW_TRADE_OFFER) + " ", owner.getName())))
+                    .append(
+                    Component.text("[").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.BOLD)
+            ).append(
+                    Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_ACCEPT)).color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD)
+                            .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/trade accept " + owner.getName()))
+                            .hoverEvent(Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_ACCEPT)).color(NamedTextColor.DARK_GRAY))
+            ).append(
+                    Component.text(" | ").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.BOLD)
+            ).append(
+                    Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_DENY)).color(NamedTextColor.RED).decorate(TextDecoration.BOLD)
+                            .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/trade deny " + owner.getName()))
+                            .hoverEvent(Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_DENY)).color(NamedTextColor.DARK_GRAY))
+            ).append(
+                    Component.text("]").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.BOLD)
+            ).toBuilder().build();
 
-
-            final TextComponent CHAT_ACCEPT_BUTTON = Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_ACCEPT))
-                            .color(NamedTextColor.GREEN)
-                                    .decorate(TextDecoration.BOLD)
-                                    .hoverEvent(
-                                            Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_ACCEPT))
-                                                    .decorate(TextDecoration.ITALIC)
-                                                    .color(NamedTextColor.DARK_GRAY))
-                    .append(ACCEPT_CLICK_EVENT);
-
-
-            final TextComponent CHAT_DENY_BUTTON = Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_DENY))
-                    .color(NamedTextColor.RED)
-                    .decorate(TextDecoration.BOLD)
-                    .hoverEvent(
-                            Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_DENY))
-                                    .decorate(TextDecoration.ITALIC)
-                                    .color(NamedTextColor.DARK_GRAY))
-                    .append(ACCEPT_CLICK_EVENT);
-
-
-
-            final TextComponent CHAT_BUTTON_COMPONENT = Component.text("[")
-                            .color(NamedTextColor.DARK_GRAY)
-                                    .append(CHAT_ACCEPT_BUTTON)
-                    .append(Component.text(" | ").color(NamedTextColor.DARK_GRAY))
-                    .append(CHAT_DENY_BUTTON);
-
-            target.sendMessage(
-                    String.format(Main.PREFIX + messageStrings.getTranslation(Translations.YOU_GOT_A_NEW_TRADE_OFFER) + CHAT_BUTTON_COMPONENT,
-                            owner.getName()));
+            target.sendMessage(CHAT_BUTTON_COMPONENT);
             target.playSound(target.getLocation(), Sound.ITEM_GOAT_HORN_SOUND_3, 1.0f, 1.0f);
             owner.playSound(owner.getLocation(), Sound.ENTITY_VILLAGER_YES, 1.0f, 1.0f);
             Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), new Runnable() {

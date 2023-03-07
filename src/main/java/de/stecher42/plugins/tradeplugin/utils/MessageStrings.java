@@ -69,8 +69,7 @@ public class MessageStrings {
             this.translations.put(Translations.CAN_NOT_TRADE_WITH_YOURSELF, "§cDu kannst nicht mit dir selbst handeln!");
             this.translations.put(Translations.ALREADY_SENT_TRADE_REQUEST, "§cDu hast bereits eine Handelsanfrage an §6%s gesendet! " +
                     "§cBitte brich den Handel zuerst ab, indem du §8/trade cancel§c benutzt,");
-            this.translations.put(Translations.YOU_GOT_A_NEW_TRADE_OFFER, "Du hast ein neues Handelsangebot von §6%s§r erhalten! " +
-                    "§rVerwende §8/trade accept <Name>, §rum zu handeln.");
+            this.translations.put(Translations.YOU_GOT_A_NEW_TRADE_OFFER, "Du hast ein neues Handelsangebot von §6%s§r erhalten! Akzeptiere, um zu handeln.");
             this.translations.put(Translations.TRADE_REQUEST_BY_EXPIRED, "§8§l§ka§r §cDie Handelsanfrage von §6%s§c ist abgelaufen!");
             this.translations.put(Translations.OWN_TRADE_REQUEST_EXPIRED, "§cDeine Handelsanfrage an §6%s§c ist abgelaufen!");
             this.translations.put(Translations.PLAYER_DID_NOT_SENT_YOU_A_TRADE_REQUEST, "Dieser Spieler hat dir kein Handelsangebot gesendet. Tut uns leid.");
@@ -124,8 +123,7 @@ public class MessageStrings {
             this.translations.put(Translations.CAN_NOT_TRADE_WITH_YOURSELF, "§cYou can't trade with yourself!");
             this.translations.put(Translations.ALREADY_SENT_TRADE_REQUEST, "§cYou already sent a trade request to §6%s! " +
                     "§cPlease cancel the trade, by using §8/trade cancel§c first,");
-            this.translations.put(Translations.YOU_GOT_A_NEW_TRADE_OFFER, "You got a new trade offer by §6%s! §rUse " +
-                    "§8/trade accept <Name>, §rto deal.");
+            this.translations.put(Translations.YOU_GOT_A_NEW_TRADE_OFFER, "You got a new trade offer by §6%s! Accept to trade.");
             this.translations.put(Translations.TRADE_REQUEST_BY_EXPIRED, "§8§l§ka§r §cThe trade request by §6%s§c expired!");
             this.translations.put(Translations.OWN_TRADE_REQUEST_EXPIRED, "§cYour trade request to §6%s§r §cexpired!");
             this.translations.put(Translations.PLAYER_DID_NOT_SENT_YOU_A_TRADE_REQUEST, "This player is not in a trade " +

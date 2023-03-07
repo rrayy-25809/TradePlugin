@@ -16,16 +16,20 @@ public class PlayerRightClicksPlayerListener implements Listener {
         MessageStrings messageStrings = Main.getPlugin().getMessageStrings();
         Player p = e.getPlayer();
         if(e.getRightClicked() instanceof Player) {
-            Player target = (Player) e.getRightClicked();
-            DealMaker dm = Main.getPlugin().getDealMaker();
-            if(dm.addPlayerToCooldown(p)) {
-                if(dm.madePlayerARequest(target, p)) {
-                    dm.acceptTrade(p, target);
-                } else {
-                    boolean success = dm.makeTradeOffer(p, target);
-                    if(success)
-                        p.sendMessage(Main.PREFIX + String.format(
-                                messageStrings.getTranslation(Translations.TRADE_REQUEST_SENT), target.getName()));
+            if(Main.getPlugin().getConfigValues().toggleUseWithoutPermission() || p.hasPermission("trade.trade")
+                    || p.hasPermission("trade.*")) {
+
+                Player target = (Player) e.getRightClicked();
+                DealMaker dm = Main.getPlugin().getDealMaker();
+                if(dm.addPlayerToCooldown(p)) {
+                    if(dm.madePlayerARequest(target, p)) {
+                        dm.acceptTrade(p, target);
+                    } else {
+                        boolean success = dm.makeTradeOffer(p, target);
+                        if(success)
+                            p.sendMessage(Main.PREFIX + String.format(
+                                    messageStrings.getTranslation(Translations.TRADE_REQUEST_SENT), target.getName()));
+                    }
                 }
             }
         }
