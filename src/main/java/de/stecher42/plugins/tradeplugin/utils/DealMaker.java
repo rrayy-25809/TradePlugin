@@ -113,8 +113,9 @@ public class DealMaker {
                 if(Bukkit.getPlayer(key) != null) {
                     Bukkit.getPlayer(key).sendMessage(String.format(Main.PREFIX +
                             messageStrings.getTranslation(Translations.OPPONENT_DENIED_TRADE_REQUEST), target.getName()));
-                    target.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.YOU_DECLINED_TRADE_REQUEST) +
-                            Bukkit.getPlayer(key).getName());
+                    target.sendMessage(String.format(Main.PREFIX + messageStrings.getTranslation(Translations.YOU_DECLINED_TRADE_REQUEST),
+                            Bukkit.getPlayer(key).getName()));
+                    found = true;
                 }
                 pairs.remove(key);
             }
