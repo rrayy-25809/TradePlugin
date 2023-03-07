@@ -31,9 +31,9 @@ public class DealMaker {
                 public void run() {
                     Player opponent = Main.getPlugin().getDealMaker().cancelTrade(owner);
                     if(opponent != null) {
-                        opponent.sendMessage(String.format(messageStrings.getTranslation(Translations.TRADE_REQUEST_BY_EXPIRED), owner.getName()));
+                        opponent.sendMessage(String.format(Main.PREFIX + messageStrings.getTranslation(Translations.TRADE_REQUEST_BY_EXPIRED), owner.getName()));
                         opponent.playSound(opponent.getLocation(), Sound.ENTITY_RAVAGER_CELEBRATE, 1.0f, 1.0f);
-                        owner.sendMessage(String.format(messageStrings.getTranslation(Translations.OWN_TRADE_REQUEST_EXPIRED), opponent.getName()));
+                        owner.sendMessage(String.format(Main.PREFIX + messageStrings.getTranslation(Translations.OWN_TRADE_REQUEST_EXPIRED), opponent.getName()));
                         owner.playSound(owner.getLocation(), Sound.ENTITY_WARDEN_HURT, 1.0f, 1.0f);
                     }
                 }
