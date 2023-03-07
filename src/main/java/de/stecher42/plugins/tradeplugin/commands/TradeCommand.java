@@ -3,6 +3,7 @@ package de.stecher42.plugins.tradeplugin.commands;
 import de.stecher42.plugins.tradeplugin.main.Main;
 import de.stecher42.plugins.tradeplugin.utils.DealMaker;
 import de.stecher42.plugins.tradeplugin.utils.MessageStrings;
+import de.stecher42.plugins.tradeplugin.utils.Translations;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -11,14 +12,16 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class TradeCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
+        MessageStrings messageStrings = Main.getPlugin().getMessageStrings();
+
         if(sender instanceof Player) {
-            final String WRONG_USAGE = Main.PREFIX + "§cWrong usage of the command /trade! Please use §6/trade <Name>§c or " +
-                    "§6/trade accept§c, to accept an incoming trade.";
+            final String WRONG_USAGE = Main.PREFIX + messageStrings.getTranslation(Translations.WRONG_USAGE);
             final String GITHUB_URL = "§6https://https://github.com/Robby3St/TradePlugin/§r";
 
             Player p = (Player) sender;
@@ -42,35 +45,32 @@ public class TradeCommand implements CommandExecutor {
                         Player opposite = Bukkit.getPlayer(args[0]);
                         boolean success = dm.makeTradeOffer(p, opposite);
                         if(success)
-                            p.sendMessage(String.format("%s§aThe trade request was now sent to §6%s!", Main.PREFIX, args[0]));
+                            p.sendMessage(Main.PREFIX + String.format(messageStrings.getTranslation(Translations.TRADE_REQUEST_SENT), args[0]));
 
 
                     } else if(args[0].equalsIgnoreCase("reload") && p.hasPermission("trade.reload")) {
                         Main.getPlugin().reloadConfig();
-                        p.sendMessage(Main.PREFIX + "Reloaded the config!");
+                        p.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.RELOADED_CONFIG));
 
 
                     } else if(args[0].equalsIgnoreCase("author")) {
-                        p.sendMessage(Main.PREFIX + "§aAuthor of the trade plugin is §6Robby3St. §a" +
-                                "Find the plugin on §6GitHub " + GITHUB_URL);
+                        p.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.AUTHOR_OF_PLUGIN_IS) + GITHUB_URL);
 
 
                     } else if(args[0].equalsIgnoreCase("version") && (p.hasPermission("trade.version")
                             || p.hasPermission("trade.*"))) {
-                        p.sendMessage(Main.PREFIX + "§aThe current used version of the pluin is: §6" +
-                                Main.getPlugin().getDescription().getVersion() + ". §aYou can " +
-                                "check for original newer versions here: " +
-                                "§6GitHub " + GITHUB_URL);
+                        p.sendMessage(String.format(Main.PREFIX + messageStrings.getTranslation(Translations.PLUGIN_VERSION_IS),
+                                Main.getPlugin().getDescription().getVersion(), GITHUB_URL));
 
 
                     } else if(args[0].equalsIgnoreCase("download")) {
-                        p.sendMessage(Main.PREFIX + "§aYou can download the original " +
-                                "trade plugin by Robby3St here: " + GITHUB_URL);
+                        p.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.DOWNLOAD_PLUGIN_HERE) + GITHUB_URL);
 
 
                     } else {
-                        p.sendMessage(String.format("%s§cCould not find a player with the name §6'%s'. §cPlease use " +
-                                "§6/trade <Name>§c or §6/trade accept, §cto accept an incoming trade!", Main.PREFIX, args[0]));
+                        p.sendMessage(String.format(messageStrings.getTranslation(
+                                Translations.COULD_NOT_FIND_PLAYER_WITH_THAT_NAME_PLEASE_USE_COMMAND),
+                                Main.PREFIX, args[0]));
                     }
                 } else if(args.length == 2) {
                     if(args[0].equalsIgnoreCase("accept")) {
@@ -78,8 +78,9 @@ public class TradeCommand implements CommandExecutor {
                             dm.acceptTrade(p, Objects.requireNonNull(Bukkit.getPlayer(args[0])));
                             return true;
                         } else {
-                            p.sendMessage(String.format("%s§cCould not find a player with the name §6'%s'. §cPlease use " +
-                                    "§6/trade <Name>§c or §6/trade accept, §cto accept an incoming trade!", Main.PREFIX, args[0]));
+                            p.sendMessage(String.format(messageStrings.getTranslation(
+                                    Translations.COULD_NOT_FIND_PLAYER_WITH_THAT_NAME_PLEASE_USE_COMMAND),
+                                    Main.PREFIX, args[0]));
                         }
 
 
@@ -87,21 +88,23 @@ public class TradeCommand implements CommandExecutor {
                         if(Bukkit.getPlayer(args[1]) != null) {
                             dm.denyTrade(p, Objects.requireNonNull(Bukkit.getPlayer(args[1])));
                         } else {
-                            p.sendMessage(Main.PREFIX + "§cCould not find a player with that name!");
+                            p.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.COULD_NOT_FIND_PLAYER_WITH_THAT_NAME));
                         }
                     }
                 } else {
                     p.sendMessage(WRONG_USAGE);
                 }
             } else {
-                p.sendMessage(MessageStrings.NO_PERMISSION);
+                p.sendMessage(messageStrings.getTranslation(Translations.NO_PERMISSION));
             }
         } else {
             if(args[0].equalsIgnoreCase("reload")) {
                 Main.getPlugin().reloadConfig();
-                sender.sendMessage("Reload the config!");
+                Main.getPlugin().reloadConfigValues();
+                Main.getPlugin().getMessageStrings().reloadConfig();
+                sender.sendMessage(messageStrings.getTranslation(Translations.RELOADED_CONFIG));
             } else
-                sender.sendMessage("You must be a player, to do this!");
+                sender.sendMessage(messageStrings.getTranslation(Translations.MUST_BE_A_PLAYER));
         }
         return true;
     }

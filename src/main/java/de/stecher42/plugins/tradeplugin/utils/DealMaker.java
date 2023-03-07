@@ -12,19 +12,18 @@ public class DealMaker {
     private HashMap<UUID, Player> pairs = new HashMap<UUID, Player>(); // Owner saved as UUID in key
     private ArrayList<TradingWindow> currentDealInvs = new ArrayList<TradingWindow>();
 
+
     public boolean makeTradeOffer(Player owner, Player target) {
+        MessageStrings messageStrings = Main.getPlugin().getMessageStrings();
         if(owner.getUniqueId().equals(target.getUniqueId())) {
-            owner.sendMessage(Main.PREFIX + "§cYou can't trade with yourself!");
+            owner.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.CAN_NOT_TRADE_WITH_YOURSELF));
             return false;
         } else if(pairs.containsKey(owner.getUniqueId())) {
-            owner.sendMessage(Main.PREFIX + "§cYou already sent a trade request to §6" +
-                    pairs.get(owner.getUniqueId()).getName() +
-                    "§c! Please cancel the trade, by using §8/trade cancel§c first,");
+            owner.sendMessage(String.format(Main.PREFIX + messageStrings.getTranslation(Translations.ALREADY_SENT_TRADE_REQUEST), pairs.get(owner.getUniqueId()).getName()));
             return false;
         } else {
             pairs.put(owner.getUniqueId(), target);
-            target.sendMessage(Main.PREFIX + "You got a new trade offer by §6" + owner.getName() +
-                    "§r! Use §8/trade accept <Name>§r, to deal.");
+            target.sendMessage(String.format(Main.PREFIX + messageStrings.getTranslation(Translations.YOU_GOT_A_NEW_TRADE_OFFER), owner.getName()));
             target.playSound(target.getLocation(), Sound.ITEM_GOAT_HORN_SOUND_3, 1.0f, 1.0f);
             owner.playSound(owner.getLocation(), Sound.ENTITY_VILLAGER_YES, 1.0f, 1.0f);
             Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), new Runnable() {
@@ -32,9 +31,9 @@ public class DealMaker {
                 public void run() {
                     Player opponent = Main.getPlugin().getDealMaker().cancelTrade(owner);
                     if(opponent != null) {
-                        opponent.sendMessage("The trade request by §6" + owner.getName() + "§r expired!");
+                        opponent.sendMessage(String.format(messageStrings.getTranslation(Translations.TRADE_REQUEST_BY_EXPIRED), owner.getName()));
                         opponent.playSound(opponent.getLocation(), Sound.ENTITY_RAVAGER_CELEBRATE, 1.0f, 1.0f);
-                        owner.sendMessage("Your trade request to §6" + opponent.getName() + "§r expired!");
+                        owner.sendMessage(String.format(messageStrings.getTranslation(Translations.OWN_TRADE_REQUEST_EXPIRED), opponent.getName()));
                         owner.playSound(owner.getLocation(), Sound.ENTITY_WARDEN_HURT, 1.0f, 1.0f);
                     }
                 }
@@ -44,15 +43,17 @@ public class DealMaker {
     }
 
     public void acceptTrade(Player targeted, Player acceptedPlayer) {
+        MessageStrings messageStrings = Main.getPlugin().getMessageStrings();
         if(pairs.containsKey(acceptedPlayer.getUniqueId()) && pairs.get(acceptedPlayer.getUniqueId()).equals(targeted)) {
             TradingWindow trade = new TradingWindow(acceptedPlayer, targeted);
             pairs.remove(acceptedPlayer.getUniqueId());
         } else {
-            targeted.sendMessage(Main.PREFIX + "This player is not in a trade offer with you. Sorry.");
+            targeted.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.PLAYER_DID_NOT_SENT_YOU_A_TRADE_REQUEST));
         }
     }
 
     public void acceptTrade(Player targetted) {
+        MessageStrings messageStrings = Main.getPlugin().getMessageStrings();
         if(pairs.containsValue(targetted)) {
             boolean found = false;
             for(Player v : pairs.values()) {
@@ -60,8 +61,7 @@ public class DealMaker {
                     if(!found)
                         found = true;
                     else {
-                        targetted.sendMessage(Main.PREFIX + "You got more than 1 trade offer! " +
-                                "Please use /trade accept <Name> to accept a specific trade by a player");
+                        targetted.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.YOU_GOT_MORE_THAN_ONE_OFFER));
                         return;
                     }
                 }
@@ -72,14 +72,14 @@ public class DealMaker {
                     if(Bukkit.getPlayer(t) != null) { // Checking if trading partner is online
                         TradingWindow trade = new TradingWindow(Objects.requireNonNull(Bukkit.getPlayer(t)), targetted);
                     } else {
-                        targetted.sendMessage(Main.PREFIX + "Sorry, but this player went offline!");
+                        targetted.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.PLAYER_WENT_OFFLINE));
                     }
                     pairs.remove(t);
                     return;
                 }
             }
         } else {
-            targetted.sendMessage(Main.PREFIX + "Sorry, but you got no trading offer.");
+            targetted.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.YOU_GOT_NO_TRADING_OFFER));
         }
     }
 
@@ -95,30 +95,32 @@ public class DealMaker {
     }
 
     public void cancelOwnTrade(Player owner) {
+        MessageStrings messageStrings = Main.getPlugin().getMessageStrings();
         Player opposite = cancelTrade(owner);
         if(opposite != null) {
-            owner.sendMessage(Main.PREFIX + "You cancelled your trade with " + opposite.getName() + "!");
-            opposite.sendMessage(Main.PREFIX + owner.getName() + " canceled the trade with you.");
+            owner.sendMessage(String.format(Main.PREFIX + messageStrings.getTranslation(Translations.YOU_CANCELED_YOUR_TRADE_REQUEST), opposite.getName()));
+            opposite.sendMessage(String.format(Main.PREFIX + messageStrings.getTranslation(Translations.OPPONENT_CANCELED_TRADE_OFFER), owner.getName()));
         } else {
-            owner.sendMessage(Main.PREFIX + "Sorry, but you got no trade offers to cancel!");
+            owner.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.NO_TRADES_TO_CANCEL));
         }
     }
 
     public void denyTrade(Player target) {
+        MessageStrings messageStrings = Main.getPlugin().getMessageStrings();
         boolean found = false;
         for(UUID key : pairs.keySet()) {
             if(pairs.get(key).equals(target)) {
                 if(Bukkit.getPlayer(key) != null) {
-                    Bukkit.getPlayer(key).sendMessage(Main.PREFIX + target.getName() +
-                            " denied your trading request!");
-                    target.sendMessage(Main.PREFIX + "Declined trade request by " +
+                    Bukkit.getPlayer(key).sendMessage(String.format(Main.PREFIX +
+                            messageStrings.getTranslation(Translations.OPPONENT_DENIED_TRADE_REQUEST), target.getName()));
+                    target.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.YOU_DECLINED_TRADE_REQUEST) +
                             Bukkit.getPlayer(key).getName());
                 }
                 pairs.remove(key);
             }
         }
         if(!found)
-            target.sendMessage(Main.PREFIX + "You got no trade requests to deny!");
+            target.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.GOT_NO_REQUESTS_TO_DENY));
     }
 
     public void denyTrade(Player target, Player requester) {
@@ -138,7 +140,6 @@ public class DealMaker {
     }
 
     public void removeTradingWindow(TradingWindow tw) {
-        System.out.println("In removeTradingWindow() method");
         currentDealInvs.remove(tw);
     }
 
