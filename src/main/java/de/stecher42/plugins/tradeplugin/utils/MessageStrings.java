@@ -84,6 +84,8 @@ public class MessageStrings {
             this.translations.put(Translations.OPPONENT_DENIED_TRADE_REQUEST, "%s hat deine Handelsanfrage abgelehnt!");
             this.translations.put(Translations.YOU_DECLINED_TRADE_REQUEST, "Du hast die Handelsanfrage von %s abgelehnt.");
             this.translations.put(Translations.GOT_NO_REQUESTS_TO_DENY, "Du hast keine Handelsanfragen zum Ablehnen!");
+            this.translations.put(Translations.YOU_ENABLED_USE_WITHOUT_PERMISSION, "Spieler können nun §6ohne explizite Berechtigung§r verhandeln.");
+            this.translations.put(Translations.YOU_DISABLED_USE_WITHOUT_PERMISSION, "Spieler brauchen nun die Berechtigung §6trade.trade, §rum handeln zu können.");
         } else {
             // English translations
 
@@ -136,6 +138,8 @@ public class MessageStrings {
             this.translations.put(Translations.OPPONENT_DENIED_TRADE_REQUEST, "%s denied your trading request!");
             this.translations.put(Translations.YOU_DECLINED_TRADE_REQUEST, "Declined trade request by ");
             this.translations.put(Translations.GOT_NO_REQUESTS_TO_DENY, "You got no trade requests to deny!");
+            this.translations.put(Translations.YOU_ENABLED_USE_WITHOUT_PERMISSION, "You enabled the mode for using trades without permission!");
+            this.translations.put(Translations.YOU_DISABLED_USE_WITHOUT_PERMISSION, "You disabled the mode for using trades without permission!");
         }
     }
 
