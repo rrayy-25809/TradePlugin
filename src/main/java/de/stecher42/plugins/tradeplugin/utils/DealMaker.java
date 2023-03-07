@@ -9,22 +9,21 @@ import org.bukkit.inventory.Inventory;
 import java.util.*;
 
 public class DealMaker {
-    MessageStrings messageStrings = Main.getPlugin().getMessageStrings();
     private HashMap<UUID, Player> pairs = new HashMap<UUID, Player>(); // Owner saved as UUID in key
     private ArrayList<TradingWindow> currentDealInvs = new ArrayList<TradingWindow>();
 
+
     public boolean makeTradeOffer(Player owner, Player target) {
+        MessageStrings messageStrings = Main.getPlugin().getMessageStrings();
         if(owner.getUniqueId().equals(target.getUniqueId())) {
             owner.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.CAN_NOT_TRADE_WITH_YOURSELF));
             return false;
         } else if(pairs.containsKey(owner.getUniqueId())) {
-            owner.sendMessage(String.format(Main.PREFIX + messageStrings.getTranslation(
-                    Translations.ALREADY_SENT_TRADE_REQUEST), pairs.get(owner.getUniqueId()).getName()));
+            owner.sendMessage(String.format(Main.PREFIX + messageStrings.getTranslation(Translations.ALREADY_SENT_TRADE_REQUEST), pairs.get(owner.getUniqueId()).getName()));
             return false;
         } else {
             pairs.put(owner.getUniqueId(), target);
-            target.sendMessage(String.format(Main.PREFIX + messageStrings.getTranslation(
-                    Translations.YOU_GOT_A_NEW_TRADE_OFFER), owner.getName()));
+            target.sendMessage(String.format(Main.PREFIX + messageStrings.getTranslation(Translations.YOU_GOT_A_NEW_TRADE_OFFER), owner.getName()));
             target.playSound(target.getLocation(), Sound.ITEM_GOAT_HORN_SOUND_3, 1.0f, 1.0f);
             owner.playSound(owner.getLocation(), Sound.ENTITY_VILLAGER_YES, 1.0f, 1.0f);
             Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), new Runnable() {
@@ -44,6 +43,7 @@ public class DealMaker {
     }
 
     public void acceptTrade(Player targeted, Player acceptedPlayer) {
+        MessageStrings messageStrings = Main.getPlugin().getMessageStrings();
         if(pairs.containsKey(acceptedPlayer.getUniqueId()) && pairs.get(acceptedPlayer.getUniqueId()).equals(targeted)) {
             TradingWindow trade = new TradingWindow(acceptedPlayer, targeted);
             pairs.remove(acceptedPlayer.getUniqueId());
@@ -53,6 +53,7 @@ public class DealMaker {
     }
 
     public void acceptTrade(Player targetted) {
+        MessageStrings messageStrings = Main.getPlugin().getMessageStrings();
         if(pairs.containsValue(targetted)) {
             boolean found = false;
             for(Player v : pairs.values()) {
@@ -60,8 +61,7 @@ public class DealMaker {
                     if(!found)
                         found = true;
                     else {
-                        targetted.sendMessage(Main.PREFIX + messageStrings.getTranslation(
-                                Translations.YOU_GOT_MORE_THAN_ONE_OFFER));
+                        targetted.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.YOU_GOT_MORE_THAN_ONE_OFFER));
                         return;
                     }
                 }
@@ -95,6 +95,7 @@ public class DealMaker {
     }
 
     public void cancelOwnTrade(Player owner) {
+        MessageStrings messageStrings = Main.getPlugin().getMessageStrings();
         Player opposite = cancelTrade(owner);
         if(opposite != null) {
             owner.sendMessage(String.format(Main.PREFIX + messageStrings.getTranslation(Translations.YOU_CANCELED_YOUR_TRADE_REQUEST), opposite.getName()));
@@ -105,6 +106,7 @@ public class DealMaker {
     }
 
     public void denyTrade(Player target) {
+        MessageStrings messageStrings = Main.getPlugin().getMessageStrings();
         boolean found = false;
         for(UUID key : pairs.keySet()) {
             if(pairs.get(key).equals(target)) {
