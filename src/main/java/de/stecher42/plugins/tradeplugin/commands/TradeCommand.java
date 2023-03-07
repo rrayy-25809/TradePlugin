@@ -4,6 +4,11 @@ import de.stecher42.plugins.tradeplugin.main.Main;
 import de.stecher42.plugins.tradeplugin.utils.DealMaker;
 import de.stecher42.plugins.tradeplugin.utils.MessageStrings;
 import de.stecher42.plugins.tradeplugin.utils.Translations;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -25,7 +30,8 @@ public class TradeCommand implements CommandExecutor {
             final String GITHUB_URL = "§6https://https://github.com/Robby3St/TradePlugin/§r";
 
             Player p = (Player) sender;
-            if(p.hasPermission("trade.trade") || p.hasPermission("trade.*")) {
+            if(Main.getPlugin().getConfigValues().USE_WITHOUT_PERMISSION || p.hasPermission("trade.trade")
+                    || p.hasPermission("trade.*")) {
                 DealMaker dm = Main.getPlugin().getDealMaker();
                 if(args.length == 1 && !args[0].replace(" ", "").equals("")) {
                     if(args[0].equalsIgnoreCase("accept")) {
@@ -67,6 +73,14 @@ public class TradeCommand implements CommandExecutor {
                         p.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.DOWNLOAD_PLUGIN_HERE) + GITHUB_URL);
 
 
+                    } else if(args[0].equalsIgnoreCase("toggle")) {
+                        // Toggle use_without_permission_mode
+                        boolean useWithoutPermission = Main.getPlugin().getConfigValues().toggleUseWithoutPermission();
+                        p.sendMessage(String.format(Main.PREFIX +
+                                (useWithoutPermission ? messageStrings.getTranslation(
+                                        Translations.YOU_ENABLED_USE_WITHOUT_PERMISSION) :
+                                        messageStrings.getTranslation(
+                                                Translations.YOU_DISABLED_USE_WITHOUT_PERMISSION))));
                     } else {
                         p.sendMessage(String.format(messageStrings.getTranslation(
                                 Translations.COULD_NOT_FIND_PLAYER_WITH_THAT_NAME_PLEASE_USE_COMMAND),

@@ -1,6 +1,7 @@
 package de.stecher42.plugins.tradeplugin.main;
 
 import de.stecher42.plugins.tradeplugin.commands.TradeCommand;
+import de.stecher42.plugins.tradeplugin.events.PlayerRightClicksPlayerListener;
 import de.stecher42.plugins.tradeplugin.utils.ConfigValues;
 import de.stecher42.plugins.tradeplugin.utils.DealMaker;
 import de.stecher42.plugins.tradeplugin.utils.MessageStrings;
@@ -39,6 +40,7 @@ public final class Main extends JavaPlugin {
 
         PluginManager pm = Bukkit.getPluginManager();
         pm.registerEvents(new TradingWindow(), this);
+        pm.registerEvents(new PlayerRightClicksPlayerListener(), this);
 
     }
 
