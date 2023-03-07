@@ -3,6 +3,7 @@ package de.stecher42.plugins.tradeplugin.main;
 import de.stecher42.plugins.tradeplugin.commands.TradeCommand;
 import de.stecher42.plugins.tradeplugin.utils.ConfigValues;
 import de.stecher42.plugins.tradeplugin.utils.DealMaker;
+import de.stecher42.plugins.tradeplugin.utils.MessageStrings;
 import de.stecher42.plugins.tradeplugin.utils.TradingWindow;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -21,6 +22,7 @@ public final class Main extends JavaPlugin {
     private File customConfigFile;
     private FileConfiguration customConfig;
     private ConfigValues configValues;
+    private MessageStrings messageStrings;
 
     @Override
     public void onEnable() {
@@ -32,6 +34,7 @@ public final class Main extends JavaPlugin {
 
 
         this.dealMaker = new DealMaker();
+        this.messageStrings = new MessageStrings();
         this.getCommand("trade").setExecutor(new TradeCommand());
 
         PluginManager pm = Bukkit.getPluginManager();
@@ -85,5 +88,13 @@ public final class Main extends JavaPlugin {
 
     public DealMaker getDealMaker() {
         return this.dealMaker;
+    }
+
+    public MessageStrings getMessageStrings() {
+        return this.messageStrings;
+    }
+
+    public void reloadConfigValues() {
+        this.configValues = new ConfigValues(this.customConfigFile);
     }
 }

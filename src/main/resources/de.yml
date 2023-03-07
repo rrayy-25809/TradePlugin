@@ -1,0 +1,49 @@
+ACCEPT_TRADE_ITEM: §2§lHandel annehmen
+PLAYER_DID_NOT_SENT_YOU_A_TRADE_REQUEST: Dieser Spieler hat dir kein Handelsangebot
+  gesendet. Tut uns leid.
+MUST_BE_A_PLAYER: Du musst ein Spieler sein, um das zu tun!
+FILLER_ITEM: §7§l(Füll-Item)
+OWN_DECLINE_DEAL_ITEM: §c§lDiesen Handel ablehnen
+OPPONENT_DECLINED_DEAL: ' hat den Handel abgelehnt!'
+AUTHOR_OF_PLUGIN_IS: '§aDer Autor des Trade-Plugins ist §6Robby3St. §aFinde das Plugin
+  auf §6GitHub '
+DEAL_PARTNERS_FIELD: §7§l§i(Feld des Handelspartners)
+YOU_GOT_NO_TRADING_OFFER: Entschuldigung, aber du hast kein Handelsangebot erhalten.
+DEAL_WITH: §6§lHandel mit %s
+OWN_ACCEPT_DEAL_ITEM: §a§lDiesen Handel akzeptieren
+YOU_DECLINED_TRADE_REQUEST: Du hast die Handelsanfrage von %s abgelehnt.
+COULD_NOT_FIND_PLAYER_WITH_THAT_NAME_PLEASE_USE_COMMAND: '%s§cKonnte keinen Spieler
+  mit dem Namen §6''%s''§c finden. Bitte verwende §6/trade <Name>§c oder §6/trade
+  accept§c, um ein eingehendes Handelsangebot anzunehmen!'
+TRADE_REQUEST_BY_EXPIRED: Die Handelsanfrage von §6%s§r ist abgelaufen!
+PLAYER_WENT_OFFLINE: Entschuldigung, aber dieser Spieler ist offline gegangen!
+CAN_NOT_TRADE_WITH_YOURSELF: §cDu kannst nicht mit dir selbst handeln!
+YOU_GOT_MORE_THAN_ONE_OFFER: Du hast mehr als 1 Handelsangebot erhalten! Bitte benutze
+  /trade accept <Name>, um das Handelsangebot eines Spielers anzunehmen.
+YOU_DECLINED_DEAL: Du hast den Handel mit %s abgelehnt, indem du dein Inventar geschlossen
+  hast!
+PLUGIN_VERSION_IS: '§aDie aktuelle Version des Plugins ist: §6%s. §aDu kannst nach
+  neuen Originalversionen hier suchen: §6GitHub %s'
+DEAL_PARTNERS_LORE_2: §r§lDealpartners
+TRADE_REQUEST_SENT: §aDas Handelsangebot wurde an §6%s§a gesendet!
+OWN_TRADE_REQUEST_EXPIRED: Deine Handelsanfrage an §6%s§r ist abgelaufen!
+COULD_NOT_FIND_PLAYER_WITH_THAT_NAME: §cKonnte keinen Spieler mit diesem Namen finden!
+YOU_GOT_A_NEW_TRADE_OFFER: Du hast ein neues Handelsangebot von §6%s§r erhalten! §rVerwende
+  §8/trade accept <Name>, §rum zu handeln.
+NO_TRADES_TO_CANCEL: Entschuldigung, aber du hast keine Handelsangebote zum Abbrechen!
+OPPOSITE_ACCEPTS_DEAL_ITEM: §a§lGegenüber akzeptiert diesen Handel
+YOU_CANCELED_YOUR_TRADE_REQUEST: Du hast deinen Handel mit %s abgebrochen!
+NO_PERMISSION: §cDu hast keine Berechtigung dazu!
+WRONG_USAGE: §cFalsche Benutzung des Befehls /trade! Bitte verwende §6/trade <Name>§c
+  oder §6/trade accept§c, um ein eingehendes Handelsangebot anzunehmen.
+GOT_NO_REQUESTS_TO_DENY: Du hast keine Handelsanfragen zum Ablehnen!
+RELOADED_CONFIG: Die Konfiguration wurde neu geladen!
+OPPONENT_CANCELED_TRADE_OFFER: '%s hat das Handelsangebot mit dir abgebrochen.'
+OPPOSITE_DID_NOT_ACCEPTED_TRADE_ITEM: §c§lGegenüber hat noch nicht angenommen
+ALREADY_SENT_TRADE_REQUEST: §cDu hast bereits eine Handelsanfrage an §6%s gesendet!
+  §cBitte brich den Handel zuerst ab, indem du §8/trade cancel§c benutzt,
+DEAL_PARTNERS_LORE_1: '§r§lItem des '
+DOWNLOAD_PLUGIN_HERE: '§aDu kannst das Original-Trade-Plugin von Robby3St hier herunterladen: '
+OPPONENT_DENIED_TRADE_REQUEST: '%s hat deine Handelsanfrage abgelehnt!'
+YOU_DECLINED_TRADE_REQUEST: Du hast die Handelsanfrage von %s abgelehnt.
+GOT_NO_REQUESTS_TO_DENY: Du hast keine Handelsanfragen zum Ablehnen!

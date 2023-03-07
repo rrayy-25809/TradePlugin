@@ -21,9 +21,10 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class TradingWindow implements Listener {
+    MessageStrings messageStrings = Main.getPlugin().getMessageStrings();
     final int ROWS = 6;
     final int CHEST_SIZE = 9 * ROWS;
-    final String OPPOSITE_FIELD_GLASS_NAME = "§7§l§i(Deal partner's field)";
+    final String OPPOSITE_FIELD_GLASS_NAME = messageStrings.getTranslation(Translations.DEAL_PARTNERS_FIELD);
     int slots;
 
     Player player;
@@ -56,9 +57,9 @@ public class TradingWindow implements Listener {
         paidAfterClose = false;
 
         this.playerInventory = Bukkit.createInventory(null, CHEST_SIZE,
-                "§6§lDeal with " + oppositeDealPartner.getName());
+                String.format(messageStrings.getTranslation(Translations.DEAL_WITH), oppositeDealPartner.getName()));
         this.oppositeInventory = Bukkit.createInventory(null, CHEST_SIZE,
-                 "§6§lDeal with " + player.getName());
+                 String.format(messageStrings.getTranslation(Translations.DEAL_WITH), player.getName()));
 
 
         prepareInventory(playerInventory);
@@ -81,7 +82,7 @@ public class TradingWindow implements Listener {
     private void prepareInventory(Inventory inv) {
         ItemStack filler = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
         ItemMeta im = filler.getItemMeta();
-        im.setDisplayName("§7§l(Filler)");
+        im.setDisplayName(messageStrings.getTranslation(Translations.FILLER_ITEM));
         filler.setItemMeta(im);
 
         separator = new ItemStack(Material.WHITE_STAINED_GLASS_PANE);
@@ -91,7 +92,7 @@ public class TradingWindow implements Listener {
 
         ItemStack personalTradeAccepment = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
         ItemMeta imPTA = personalTradeAccepment.getItemMeta();
-        imPTA.setDisplayName("§2§lAccept Trade");
+        imPTA.setDisplayName(messageStrings.getTranslation(Translations.ACCEPT_TRADE_ITEM));
         personalTradeAccepment.setItemMeta(imPTA);
 
         this.initGlassConfig();
@@ -114,22 +115,22 @@ public class TradingWindow implements Listener {
     public void initGlassConfig() {
         oppositeRedGlass = new ItemStack(Material.RED_STAINED_GLASS_PANE);
         ItemMeta imRed = oppositeRedGlass.getItemMeta();
-        imRed.setDisplayName("§c§lOpposite didn't accepted yet");
+        imRed.setDisplayName(messageStrings.getTranslation(Translations.OPPOSITE_DID_NOT_ACCEPTED_TRADE_ITEM));
         oppositeRedGlass.setItemMeta(imRed);
 
         oppositeGreenGlass = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
         ItemMeta imOppGreen = oppositeGreenGlass.getItemMeta();
-        imOppGreen.setDisplayName("§a§lOpposite accepts this deal");
+        imOppGreen.setDisplayName(messageStrings.getTranslation(Translations.OPPOSITE_ACCEPTS_DEAL_ITEM));
         oppositeGreenGlass.setItemMeta(imOppGreen);
 
         ownRedGlass = new ItemStack(Material.RED_STAINED_GLASS_PANE);
         ItemMeta imOwnRed = ownRedGlass.getItemMeta();
-        imOwnRed.setDisplayName("§c§lDecline this deal");
+        imOwnRed.setDisplayName(messageStrings.getTranslation(Translations.OWN_DECLINE_DEAL_ITEM));
         ownRedGlass.setItemMeta(imOwnRed);
 
         ownGreenGlass = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
         ItemMeta imOwnGreen = ownGreenGlass.getItemMeta();
-        imOwnGreen.setDisplayName("§a§lAccept this deal");
+        imOwnGreen.setDisplayName(messageStrings.getTranslation(Translations.OWN_ACCEPT_DEAL_ITEM));
         ownGreenGlass.setItemMeta(imOwnGreen);
     }
 
@@ -248,11 +249,10 @@ public class TradingWindow implements Listener {
                 o.playSound(o.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.0f, 1.0f);
 
                 boolean eventPlayerIsOpponent = player.equals(tw.opposite);
-                final String YOU_DECLINED = Main.PREFIX + "You declined the deal with " +
-                        (eventPlayerIsOpponent ? p.getName() : o.getName()) +
-                        " by closing your inventory!";
+                final String YOU_DECLINED = String.format(Main.PREFIX + messageStrings.getTranslation(
+                        Translations.YOU_DECLINED_DEAL), (eventPlayerIsOpponent ? p.getName() : o.getName()));
                 final String OTHER_DECLINED = Main.PREFIX + (eventPlayerIsOpponent ? o.getName() : p.getName()) +
-                        " declined the deal!";
+                        messageStrings.getTranslation(Translations.OPPONENT_DECLINED_DEAL);
 
                 p.sendMessage(eventPlayerIsOpponent ? OTHER_DECLINED : YOU_DECLINED);
                 o.sendMessage(eventPlayerIsOpponent ? YOU_DECLINED : OTHER_DECLINED);
@@ -316,8 +316,8 @@ public class TradingWindow implements Listener {
                         ItemStack itemStack = playerItems[pointer].clone();
                         ItemMeta im = itemStack.getItemMeta();
                         ArrayList<String> meta = new ArrayList<String>();
-                        meta.add("§r§lDeal partner's ");
-                        meta.add("§r§litem");
+                        meta.add(messageStrings.getTranslation(Translations.DEAL_PARTNERS_LORE_1));
+                        meta.add(messageStrings.getTranslation(Translations.DEAL_PARTNERS_LORE_2));
                         im.setLore(meta);
                         itemStack.setItemMeta(im);
                         this.playerInventory.setItem(i, itemStack);
@@ -332,8 +332,8 @@ public class TradingWindow implements Listener {
                         ItemStack itemStack = playerItems[pointer].clone();
                         ItemMeta im = itemStack.getItemMeta();
                         ArrayList<String> meta = new ArrayList<String>();
-                        meta.add("§r§lDeal partner's ");
-                        meta.add("§r§litem");
+                        meta.add(messageStrings.getTranslation(Translations.DEAL_PARTNERS_LORE_1));
+                        meta.add(messageStrings.getTranslation(Translations.DEAL_PARTNERS_LORE_2));
                         im.setLore(meta);
                         itemStack.setItemMeta(im);
                         this.oppositeInventory.setItem(i, itemStack);
