@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -471,6 +472,16 @@ public class TradingWindow implements Listener {
             } else {
                 tw.refreshInventorySwitch();
             }
+        }
+    }
+
+
+    @EventHandler
+    public void onInventoryDrop(PlayerDropItemEvent e) {
+        // Prevent item drops during trade
+        DealMaker dm = Main.getPlugin().getDealMaker();
+        if(dm.isPlayerCurrentlyDealing(e.getPlayer())) {
+            e.setCancelled(true);
         }
     }
 

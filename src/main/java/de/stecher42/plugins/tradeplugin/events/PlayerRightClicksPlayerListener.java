@@ -1,6 +1,7 @@
 package de.stecher42.plugins.tradeplugin.events;
 
 import de.stecher42.plugins.tradeplugin.main.Main;
+import de.stecher42.plugins.tradeplugin.utils.ConfigValues;
 import de.stecher42.plugins.tradeplugin.utils.DealMaker;
 import de.stecher42.plugins.tradeplugin.utils.MessageStrings;
 import de.stecher42.plugins.tradeplugin.utils.Translations;
@@ -14,10 +15,12 @@ public class PlayerRightClicksPlayerListener implements Listener {
     @EventHandler
     public void onPlayerInteracts(PlayerInteractEntityEvent e) {
         MessageStrings messageStrings = Main.getPlugin().getMessageStrings();
+        ConfigValues configValues = Main.getPlugin().getConfigValues();
         Player p = e.getPlayer();
         if(e.getRightClicked() instanceof Player) {
-            if(Main.getPlugin().getConfigValues().toggleUseWithoutPermission() || p.hasPermission("trade.trade")
-                    || p.hasPermission("trade.*")) {
+            if(configValues.ENABLE_TRADE_BY_RIGHTCLICK_PLAYER && (configValues.toggleUseWithoutPermission()
+                    || p.hasPermission("trade.tradebyclick")
+                    || p.hasPermission("trade.*"))) {
 
                 Player target = (Player) e.getRightClicked();
                 DealMaker dm = Main.getPlugin().getDealMaker();
