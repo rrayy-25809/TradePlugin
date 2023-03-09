@@ -33,7 +33,7 @@ public class TradeCommand implements CommandExecutor {
             if(Main.getPlugin().getConfigValues().USE_WITHOUT_PERMISSION || p.hasPermission("trade.trade")
                     || p.hasPermission("trade.*")) {
                 DealMaker dm = Main.getPlugin().getDealMaker();
-                if(args.length == 1 && !args[0].replace(" ", "").equals("")) {
+                if(args.length == 1) {
                     if(args[0].equalsIgnoreCase("accept")) {
                         dm.acceptTrade(p);
                         return true;
@@ -88,13 +88,13 @@ public class TradeCommand implements CommandExecutor {
                     }
                 } else if(args.length == 2) {
                     if(args[0].equalsIgnoreCase("accept")) {
-                        if(Bukkit.getPlayer(args[0]) != null) {
-                            dm.acceptTrade(p, Objects.requireNonNull(Bukkit.getPlayer(args[0])));
+                        if(Bukkit.getPlayer(args[1]) != null) {
+                            dm.acceptTrade(p, Objects.requireNonNull(Bukkit.getPlayer(args[1])));
                             return true;
                         } else {
                             p.sendMessage(String.format(messageStrings.getTranslation(
                                     Translations.COULD_NOT_FIND_PLAYER_WITH_THAT_NAME_PLEASE_USE_COMMAND),
-                                    Main.PREFIX, args[0]));
+                                    Main.PREFIX, args[1]));
                         }
 
 

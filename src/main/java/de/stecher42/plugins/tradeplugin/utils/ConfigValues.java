@@ -36,12 +36,12 @@ public class ConfigValues {
         }
 
         if(!cfg.contains((USE_WITHOUT_PERMISSION_PATH))) {
-            cfg.set(USE_WITHOUT_PERMISSION_PATH, "true");
+            cfg.set(USE_WITHOUT_PERMISSION_PATH, true);
             this.saveCfg();
         }
 
         if(!cfg.contains((ENABLE_TRADE_BY_RIGHTCLICK_PLAYER_PATH))) {
-            cfg.set(ENABLE_TRADE_BY_RIGHTCLICK_PLAYER_PATH, "true");
+            cfg.set(ENABLE_TRADE_BY_RIGHTCLICK_PLAYER_PATH, true);
             this.saveCfg();
         }
 

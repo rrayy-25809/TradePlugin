@@ -2,13 +2,12 @@ package de.stecher42.plugins.tradeplugin.utils;
 
 import de.stecher42.plugins.tradeplugin.main.Main;
 import org.bukkit.*;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
+import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
@@ -42,6 +41,11 @@ public class TradingWindow implements Listener {
     ItemStack ownRedGlass;
     ItemStack ownGreenGlass;
     ItemStack separator;
+
+    Item droppedItemByPlayer;
+    Item droppedItemByOpponent;
+    int cursorPlayer;
+    int cursorOpponent;
 
     boolean playerAcceptedDeal;
     boolean oppositeAcceptedDeal;
@@ -402,8 +406,18 @@ public class TradingWindow implements Listener {
         Player p = (Player) e.getWhoClicked();
         DealMaker dm = Main.getPlugin().getDealMaker();
 
+
         if(Main.getPlugin().getDealMaker().isInventoryInList(e.getClickedInventory())) {
             TradingWindow tw = Main.getPlugin().getDealMaker().getTradingWindow(e.getClickedInventory());
+
+            // Save click slot for drop event
+
+            if(e.getClick().isKeyboardClick()) {
+                if(tw.player.equals(p))
+                    tw.cursorPlayer = e.getSlot();
+                else if(tw.opposite.equals(p))
+                    tw.cursorOpponent = e.getSlot();
+            }
 
             if(e.getClickedInventory().equals(tw.playerInventory)) {
                 if(isPersonalTradeAccepmentField(e.getSlot())) {
@@ -481,8 +495,60 @@ public class TradingWindow implements Listener {
         // Prevent item drops during trade
         DealMaker dm = Main.getPlugin().getDealMaker();
         if(dm.isPlayerCurrentlyDealing(e.getPlayer())) {
+            Player p = e.getPlayer();
+            TradingWindow tw = dm.getTradingWindowByPlayer(p);
+            if(tw.player.equals(p)) {
+                // Player dropped item
+                tw.droppedItemByPlayer = e.getItemDrop();
+                ItemStack itemStack = e.getItemDrop().getItemStack();
+                if(tw.playerInventory.getItem(tw.cursorPlayer) == null)
+                    tw.playerInventory.setItem(tw.cursorPlayer, itemStack);
+                else {
+                    itemStack.setAmount(itemStack.getAmount() + tw.playerInventory.getItem(tw.cursorPlayer).getAmount());
+                    tw.playerInventory.setItem(tw.cursorPlayer, itemStack);
+                }
+                tw.onItemPickup(tw.player, itemStack, itemStack.getAmount());
+            } else {
+                tw.droppedItemByOpponent = e.getItemDrop();
+                ItemStack itemStack = e.getItemDrop().getItemStack();
+                if(tw.oppositeInventory.getItem(tw.cursorOpponent) == null)
+                    tw.oppositeInventory.setItem(tw.cursorOpponent, itemStack);
+                else {
+                    itemStack.setAmount(itemStack.getAmount() + tw.oppositeInventory.getItem(tw.cursorOpponent).getAmount());
+                    tw.oppositeInventory.setItem(tw.cursorOpponent, itemStack);
+                }
+                tw.onItemPickup(tw.opposite, itemStack, itemStack.getAmount());
+            }
             e.setCancelled(true);
         }
+
+    }
+
+    private void onItemPickup(Player p, ItemStack itemToRemove, int originalAmount) {
+        Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), new Runnable() {
+            @Override
+            public void run() {
+                int leftAmount = originalAmount;
+                Inventory playerInventory = p.getInventory();
+//                for(int i = 0; i < playerInventory.getSize(); i++) {
+//                    if (itemToRemove != null) {
+//                        if(playerInventory.getItem(i).equals(itemToRemove)) {
+//                            ItemStack stolenItem = playerInventory.getItem(i);
+//                            if(stolenItem.getAmount() > leftAmount) {
+//                                stolenItem.setAmount(stolenItem.getAmount() - originalAmount);
+//                            } else if(stolenItem.getAmount() < leftAmount) {
+//                                leftAmount -= stolenItem.getAmount();
+//                                playerInventory.setItem(i, null);
+//                            } else {
+//                                playerInventory.setItem(i, null);
+//                                leftAmount = 0;
+//                            }
+//                        }
+//                    }
+//                }
+                playerInventory.remove(itemToRemove);
+            }
+        }, 1);
     }
 
 
