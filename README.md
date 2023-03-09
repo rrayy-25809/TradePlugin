@@ -9,7 +9,7 @@ Scroll down to find the **installation instructions.**
 
 ## About
 
-Ladies and gentlemen, I am thrilled to present Trado - the cutting-edge Java plugin that is changing the game when it comes to Minecraft item trading.
+Ladies and gentlemen, we are thrilled to present Trado - the cutting-edge Java plugin that is changing the game when it comes to Minecraft item trading.
 
 Trado offers a secure and user-friendly trading experience through an intuitive inventory GUI. With its innovative features, such as the ability to send trade requests with a simple right-click on another player, Trado has already gained a reputation as a must-have plugin for Minecraft servers.
 
@@ -56,9 +56,11 @@ Overall, Trado makes item trading in Minecraft easier and more secure than ever 
 
 ## Permissions
 
-trade.trade > Allow basic trading by command
-trade.version > Allow showing the current plugin version
-trade.* > Allow everything (including reload)
+`trade.trade` > Allow basic trading by command
+
+`trade.version` > Allow showing the current plugin version
+
+`trade.*` > Allow everything (including reload)
 
 
 ## Config
