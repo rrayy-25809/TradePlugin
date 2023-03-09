@@ -1,7 +1,17 @@
 package de.stecher42.plugins.tradeplugin.utils;
 
 import de.stecher42.plugins.tradeplugin.main.Main;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentBuilder;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEventSource;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -11,6 +21,7 @@ import java.util.*;
 public class DealMaker {
     private HashMap<UUID, Player> pairs = new HashMap<UUID, Player>(); // Owner saved as UUID in key
     private ArrayList<TradingWindow> currentDealInvs = new ArrayList<TradingWindow>();
+    private ArrayList<Player> cooldownRightClick = new ArrayList<Player>();
 
 
     public boolean makeTradeOffer(Player owner, Player target) {
@@ -23,7 +34,27 @@ public class DealMaker {
             return false;
         } else {
             pairs.put(owner.getUniqueId(), target);
-            target.sendMessage(String.format(Main.PREFIX + messageStrings.getTranslation(Translations.YOU_GOT_A_NEW_TRADE_OFFER), owner.getName()));
+
+            final Component CHAT_BUTTON_COMPONENT = Component.empty()
+                    .append(LegacyComponentSerializer.legacySection()
+                            .deserialize(Main.PREFIX + String.format(messageStrings.getTranslation(Translations.YOU_GOT_A_NEW_TRADE_OFFER) + " ", owner.getName())))
+                    .append(
+                            Component.text("[").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.BOLD)
+                    ).append(
+                            Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_ACCEPT)).color(NamedTextColor.GREEN).decorate(TextDecoration.BOLD)
+                                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/trade accept " + owner.getName()))
+                                    .hoverEvent(Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_ACCEPT)).color(NamedTextColor.DARK_GRAY))
+                    ).append(
+                            Component.text(" | ").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.BOLD)
+                    ).append(
+                            Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_DENY)).color(NamedTextColor.RED).decorate(TextDecoration.BOLD)
+                                    .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/trade deny " + owner.getName()))
+                                    .hoverEvent(Component.text(messageStrings.getTranslation(Translations.CHAT_BUTTON_DENY)).color(NamedTextColor.DARK_GRAY))
+                    ).append(
+                            Component.text("]").color(NamedTextColor.DARK_GRAY).decorate(TextDecoration.BOLD)
+                    ).toBuilder().build();
+
+            target.sendMessage(CHAT_BUTTON_COMPONENT);
             target.playSound(target.getLocation(), Sound.ITEM_GOAT_HORN_SOUND_3, 1.0f, 1.0f);
             owner.playSound(owner.getLocation(), Sound.ENTITY_VILLAGER_YES, 1.0f, 1.0f);
             Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), new Runnable() {
@@ -193,5 +224,30 @@ public class DealMaker {
                 tw.closeTrade(p);
             }
         }
+    }
+
+    public boolean addPlayerToCooldown(Player p) {
+        if(!this.cooldownRightClick.contains(p)) {
+            // You can init a new request
+            this.cooldownRightClick.add(p);
+            Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), new Runnable() {
+                @Override
+                public void run() {
+                    cooldownRightClick.remove(p);
+                }
+            }, 20L);
+            return true;
+        } else {
+            // Player already sent request and needs to cool down
+            return false;
+        }
+    }
+
+    public boolean madePlayerARequest(Player p, Player acceptor) {
+        if(this.pairs.containsKey(p.getUniqueId())) {
+            if(this.pairs.get(p.getUniqueId()).equals(acceptor))
+                return true;
+        }
+        return false;
     }
 }
