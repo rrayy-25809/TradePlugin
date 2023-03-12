@@ -87,6 +87,7 @@ public class MessageStrings {
             this.translations.put(Translations.YOU_DISABLED_USE_WITHOUT_PERMISSION, "Spieler brauchen nun die Berechtigung §6trade.trade, §rum handeln zu können.");
             this.translations.put(Translations.CHAT_BUTTON_ACCEPT, "Annehmen");
             this.translations.put(Translations.CHAT_BUTTON_DENY, "Ablehnen");
+            this.translations.put(Translations.PLAYER_TO_FAR_AWAY, "§cDer Spieler, dem du eine Handelsanfrage senden möchtest, ist weiter als die erlaubten §6§l%s Blöcke §centfernt.");
         } else {
             // English translations
 
@@ -142,6 +143,7 @@ public class MessageStrings {
             this.translations.put(Translations.YOU_DISABLED_USE_WITHOUT_PERMISSION, "You disabled the mode for using trades without permission!");
             this.translations.put(Translations.CHAT_BUTTON_ACCEPT, "Accept");
             this.translations.put(Translations.CHAT_BUTTON_DENY, "Deny");
+            this.translations.put(Translations.PLAYER_TO_FAR_AWAY, "§cThe player, you try to send a trade request, is too far away from you. The maximum distance is §6§l%s blocks.");
         }
     }
 

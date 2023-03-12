@@ -26,11 +26,15 @@ public class DealMaker {
 
     public boolean makeTradeOffer(Player owner, Player target) {
         MessageStrings messageStrings = Main.getPlugin().getMessageStrings();
+        ConfigValues configValues = Main.getPlugin().getConfigValues();
         if(owner.getUniqueId().equals(target.getUniqueId())) {
             owner.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.CAN_NOT_TRADE_WITH_YOURSELF));
             return false;
         } else if(pairs.containsKey(owner.getUniqueId())) {
             owner.sendMessage(String.format(Main.PREFIX + messageStrings.getTranslation(Translations.ALREADY_SENT_TRADE_REQUEST), pairs.get(owner.getUniqueId()).getName()));
+            return false;
+        } else if(!isDistanceNearEnough(owner, target)) {
+            owner.sendMessage(String.format(Main.PREFIX + messageStrings.getTranslation(Translations.PLAYER_TO_FAR_AWAY), configValues.MAX_DISTANCE_FOR_USING_TRADE_COMMAND));
             return false;
         } else {
             pairs.put(owner.getUniqueId(), target);
@@ -249,5 +253,10 @@ public class DealMaker {
                 return true;
         }
         return false;
+    }
+
+    public boolean isDistanceNearEnough(Player p1, Player p2) {
+        ConfigValues cv = Main.getPlugin().getConfigValues();
+        return p1.getLocation().distance(p2.getLocation()) <= cv.MAX_DISTANCE_FOR_USING_TRADE_COMMAND;
     }
 }

@@ -48,6 +48,7 @@ public class TradeCommand implements CommandExecutor {
 
 
                     } else if(Bukkit.getPlayer(args[0]) != null) {
+                        // Players sends trade request
                         Player opposite = Bukkit.getPlayer(args[0]);
                         boolean success = dm.makeTradeOffer(p, opposite);
                         if(success)

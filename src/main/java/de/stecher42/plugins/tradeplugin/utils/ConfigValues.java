@@ -13,6 +13,7 @@ public class ConfigValues {
     public final String LANGUAGE_VERSION;
     public boolean USE_WITHOUT_PERMISSION;
     public boolean ENABLE_TRADE_BY_RIGHTCLICK_PLAYER;
+    public int MAX_DISTANCE_FOR_USING_TRADE_COMMAND;
 
     // --- PATHS
 
@@ -20,6 +21,7 @@ public class ConfigValues {
     final String LANGUAGE_VERSION_PATH = "language_version";
     final String USE_WITHOUT_PERMISSION_PATH = "use_without_permission";
     final String ENABLE_TRADE_BY_RIGHTCLICK_PLAYER_PATH = "enable_trade_by_right_click_player";
+    final String MAX_DISTANCE_FOR_USING_TRADE_COMMAND_PATH = "max_distance_for_using_trade_command";
 
     public ConfigValues(File file) {
         this.customConfigFile = file;
@@ -45,10 +47,16 @@ public class ConfigValues {
             this.saveCfg();
         }
 
+        if(!cfg.contains((MAX_DISTANCE_FOR_USING_TRADE_COMMAND_PATH))) {
+            cfg.set(MAX_DISTANCE_FOR_USING_TRADE_COMMAND_PATH, true);
+            this.saveCfg();
+        }
+
         TIME_TRADING_REQUEST_SURVIVES = cfg.getInt(TIME_REQUEST_SURVIVES_PATH);
         LANGUAGE_VERSION = cfg.getString(LANGUAGE_VERSION_PATH);
         USE_WITHOUT_PERMISSION = cfg.getBoolean(USE_WITHOUT_PERMISSION_PATH);
         ENABLE_TRADE_BY_RIGHTCLICK_PLAYER = cfg.getBoolean(ENABLE_TRADE_BY_RIGHTCLICK_PLAYER_PATH);
+        MAX_DISTANCE_FOR_USING_TRADE_COMMAND = cfg.getInt(MAX_DISTANCE_FOR_USING_TRADE_COMMAND_PATH);
     }
 
     public boolean toggleUseWithoutPermission() {
