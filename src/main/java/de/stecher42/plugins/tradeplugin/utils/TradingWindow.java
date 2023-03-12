@@ -502,15 +502,4 @@ public class TradingWindow implements Listener {
         }
     }
 
-
-//    @EventHandler
-//    public void onPlayerTeleport(PlayerTeleportEvent e) {
-//        DealMaker dm = Main.getPlugin().getDealMaker();
-//        Player p = e.getPlayer();
-//        if(dm.isPlayerCurrentlyDealing(p)) {
-//            TradingWindow tw = dm.getTradingWindowByPlayer(p);
-//            tw.closeTrade(p);
-//        }
-//    }
-
 }
