@@ -74,6 +74,8 @@ Overall, Trado makes item trading in Minecraft easier and more secure than ever 
 
 `enable_trade_by_right_click_player` > Enables the trade-by-right-click feature when set to `true` (default)
 
+`max_distance_for_using_trade_command` > Specify a maximum distance for the /trade <Name> command. Values lower than 1 disable the limitation (default is -1)
+
 
 ## Language support
 
