@@ -257,6 +257,8 @@ public class DealMaker {
 
     public boolean isDistanceNearEnough(Player p1, Player p2) {
         ConfigValues cv = Main.getPlugin().getConfigValues();
-        return p1.getLocation().distance(p2.getLocation()) <= cv.MAX_DISTANCE_FOR_USING_TRADE_COMMAND;
+        int maxDistance = cv.MAX_DISTANCE_FOR_USING_TRADE_COMMAND;
+        return p1.getLocation().distance(p2.getLocation()) <= maxDistance || maxDistance < 1;
+        // Allows disabling max distance feature by putting numbers less 1 in config, e.g. -1 (default)
     }
 }

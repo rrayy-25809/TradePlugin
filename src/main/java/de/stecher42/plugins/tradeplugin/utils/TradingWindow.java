@@ -10,6 +10,7 @@ import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -428,7 +429,6 @@ public class TradingWindow implements Listener {
                     // Player toggles deal status
                     e.setCancelled(true);
                     this.toggleOwnStatus(tw, e.getClickedInventory());
-//                    p.sendMessage(Main.PREFIX + "Toggled your deal status");
                 } else if(isOwnField(e.getSlot())) {
                     if(tw.playerAcceptedDeal || tw.oppositeAcceptedDeal)
                         e.setCancelled(true);
@@ -441,7 +441,6 @@ public class TradingWindow implements Listener {
                     // Opposite toggles own deal status
                     e.setCancelled(true);
                     this.toggleOpponentsStatus(tw);
-//                    p.sendMessage(Main.PREFIX + "Opposite toggled it deal status");
                 } else if(isOwnField(e.getSlot())) {
                     if(tw.playerAcceptedDeal || tw.oppositeAcceptedDeal)
                         e.setCancelled(true);

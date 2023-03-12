@@ -48,7 +48,7 @@ public class ConfigValues {
         }
 
         if(!cfg.contains((MAX_DISTANCE_FOR_USING_TRADE_COMMAND_PATH))) {
-            cfg.set(MAX_DISTANCE_FOR_USING_TRADE_COMMAND_PATH, true);
+            cfg.set(MAX_DISTANCE_FOR_USING_TRADE_COMMAND_PATH, -1);
             this.saveCfg();
         }
 
