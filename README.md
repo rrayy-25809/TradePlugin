@@ -1,3 +1,4 @@
+![TradePlugin-render-v1-transparent-v3](https://user-images.githubusercontent.com/35135025/224560888-f808ca14-fda0-48ea-9b28-b515fa210585.png)
 # Trado
 
 **Trado is a powerful Minecraft plugin that enables players to trade items with ease and confidence. 
