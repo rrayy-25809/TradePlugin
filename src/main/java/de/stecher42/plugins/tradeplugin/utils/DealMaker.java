@@ -348,7 +348,7 @@ public class DealMaker {
     private String playerListToString(Player[] playerList) {
         StringBuilder result = new StringBuilder();
         for(int i = 0; i < playerList.length; i++) {
-            result.append(playerList[i]);
+            result.append(playerList[i].getName());
             if(i < playerList.length - 1) result.append(", ");
         }
         return result.toString();
