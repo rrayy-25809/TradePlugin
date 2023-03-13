@@ -14,6 +14,7 @@ public class ConfigValues {
     public boolean USE_WITHOUT_PERMISSION;
     public boolean ENABLE_TRADE_BY_RIGHTCLICK_PLAYER;
     public boolean REQUIRE_SHIFT_CLICK;
+    public boolean ALLOW_BLOCKING;
     public int MAX_DISTANCE_FOR_USING_TRADE_COMMAND;
 
     // --- PATHS
@@ -23,6 +24,7 @@ public class ConfigValues {
     final String USE_WITHOUT_PERMISSION_PATH = "use_without_permission";
     final String ENABLE_TRADE_BY_RIGHTCLICK_PLAYER_PATH = "enable_trade_by_right_click_player";
     final String REQUIRE_SHIFT_CLICK_PATH = "require_shift_click";
+    final String ALLOW_BLOCKING_PATH = "allow_blocking_trade_requests";
     final String MAX_DISTANCE_FOR_USING_TRADE_COMMAND_PATH = "max_distance_for_using_trade_command";
 
     public ConfigValues(File file) {
@@ -54,6 +56,11 @@ public class ConfigValues {
             this.saveCfg();
         }
 
+        if(!cfg.contains((ALLOW_BLOCKING_PATH))) {
+            cfg.set(ALLOW_BLOCKING_PATH, true);
+            this.saveCfg();
+        }
+
         if(!cfg.contains((MAX_DISTANCE_FOR_USING_TRADE_COMMAND_PATH))) {
             cfg.set(MAX_DISTANCE_FOR_USING_TRADE_COMMAND_PATH, -1);
             this.saveCfg();
@@ -64,6 +71,7 @@ public class ConfigValues {
         USE_WITHOUT_PERMISSION = cfg.getBoolean(USE_WITHOUT_PERMISSION_PATH);
         ENABLE_TRADE_BY_RIGHTCLICK_PLAYER = cfg.getBoolean(ENABLE_TRADE_BY_RIGHTCLICK_PLAYER_PATH);
         REQUIRE_SHIFT_CLICK = cfg.getBoolean(REQUIRE_SHIFT_CLICK_PATH);
+        ALLOW_BLOCKING = cfg.getBoolean(ALLOW_BLOCKING_PATH);
         MAX_DISTANCE_FOR_USING_TRADE_COMMAND = cfg.getInt(MAX_DISTANCE_FOR_USING_TRADE_COMMAND_PATH);
     }
 

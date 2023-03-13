@@ -24,6 +24,12 @@ public class DealMaker {
     private ArrayList<Player> cooldownRightClick = new ArrayList<Player>();
 
 
+    private HashMap<UUID, ArrayList<UUID>> blocked = new HashMap<>();
+    private HashMap<UUID, ArrayList<UUID>> unblocked = new HashMap<>();
+
+    private ArrayList<UUID> generalBlocks = new ArrayList<UUID>();
+
+
     public boolean makeTradeOffer(Player owner, Player target) {
         MessageStrings messageStrings = Main.getPlugin().getMessageStrings();
         ConfigValues configValues = Main.getPlugin().getConfigValues();
@@ -35,6 +41,9 @@ public class DealMaker {
             return false;
         } else if(!isDistanceNearEnough(owner, target)) {
             owner.sendMessage(String.format(Main.PREFIX + messageStrings.getTranslation(Translations.PLAYER_TO_FAR_AWAY), configValues.MAX_DISTANCE_FOR_USING_TRADE_COMMAND));
+            return false;
+        } else if(isPlayerBlocked(owner, target)) {
+            owner.sendMessage(String.format(Main.PREFIX + messageStrings.getTranslation(Translations.PLAYER_DOES_NOT_ACCEPT_TRADE_REQUESTS)));
             return false;
         } else {
             pairs.put(owner.getUniqueId(), target);
@@ -260,5 +269,106 @@ public class DealMaker {
         int maxDistance = cv.MAX_DISTANCE_FOR_USING_TRADE_COMMAND;
         return p1.getLocation().distance(p2.getLocation()) <= maxDistance || maxDistance < 1;
         // Allows disabling max distance feature by putting numbers less 1 in config, e.g. -1 (default)
+    }
+
+    public boolean isPlayerBlocked(Player requester, Player requested) {
+        UUID requesterID = requester.getUniqueId();
+        UUID requestedID = requested.getUniqueId();
+
+        if(blocked.containsKey(requestedID) && blocked.get(requestedID).contains(requesterID)) return true; // check if specific player is blocked
+
+        if(generalBlocks.contains(requestedID)) {
+            if(unblocked.get(requestedID).contains(requesterID)) return false; // check if player is whitelisted
+            else return true; // player blocks all and does not accept specificly requester by whitelist
+        }
+        return false;
+    }
+
+    public void blockAll(Player owner) {
+        UUID ownerID = owner.getUniqueId();
+        if(blocked.containsKey(ownerID)) {
+            blocked.remove(ownerID);
+        }
+        generalBlocks.add(ownerID);
+        owner.sendMessage(Main.PREFIX + Main.getPlugin().getMessageStrings().getTranslation(Translations.BLOCKED_ALL));
+    }
+
+    public void unblockAll(Player owner) {
+        UUID ownerID = owner.getUniqueId();
+        if(generalBlocks.contains(ownerID)) generalBlocks.remove(ownerID);
+        if(blocked.containsKey(ownerID)) blocked.remove(ownerID);
+        owner.sendMessage(Main.PREFIX + Main.getPlugin().getMessageStrings().getTranslation(Translations.UNBLOCKED_ALL));
+    }
+
+    public void addBlock(Player owner, String[] playerNamesToBlock) {
+        UUID ownerID = owner.getUniqueId();
+        this.prepareBlockSystemListsForPlayerKey(ownerID);
+
+        Player[] toBlock = playerNamesToPlayers(playerNamesToBlock);
+
+        ArrayList<UUID> localBlockPointer = blocked.get(ownerID);
+        ArrayList<UUID> localUnblockPointer = unblocked.get(ownerID);
+
+        for(Player current : toBlock) {
+            UUID currentID = current.getUniqueId();
+            if(!localBlockPointer.contains(currentID)) localBlockPointer.add(currentID);
+            if(localUnblockPointer.contains(currentID)) {
+                localUnblockPointer.remove(currentID);
+            }
+        }
+        owner.sendMessage(Main.PREFIX + String.format(Main.getPlugin().getMessageStrings().getTranslation(Translations.BLOCKED_PLAYER), playerListToString(toBlock)));
+    }
+
+    public void addUnblock(Player owner, String[] playerNamesToUnblock) {
+        UUID ownerID = owner.getUniqueId();
+        this.prepareBlockSystemListsForPlayerKey(ownerID);
+
+        Player[] toUnblock = playerNamesToPlayers(playerNamesToUnblock);
+
+        ArrayList<UUID> localBlockPointer = blocked.get(ownerID);
+        ArrayList<UUID> localUnblockPointer = unblocked.get(ownerID);
+
+        for(Player current : toUnblock) {
+            UUID currentID = current.getUniqueId();
+            if(!localUnblockPointer.contains(currentID)) localUnblockPointer.add(currentID);
+            if(localBlockPointer.contains(currentID)) localBlockPointer.remove(currentID);
+        }
+        owner.sendMessage(Main.PREFIX + String.format(Main.getPlugin().getMessageStrings().getTranslation(Translations.UNBLOCKED_PLAYER), playerListToString(toUnblock)));
+    }
+
+    private Player[] playerNamesToPlayers(String[] playerNames) {
+        LinkedList<Player> result = new LinkedList<Player>();
+        for(String current : playerNames) {
+            if(Bukkit.getPlayer(current) != null)
+                result.add(Bukkit.getPlayer(current));
+        }
+        return linkedListToPlayerArray(result);
+    }
+
+    private String playerListToString(Player[] playerList) {
+        StringBuilder result = new StringBuilder();
+        for(int i = 0; i < playerList.length; i++) {
+            result.append(playerList[i]);
+            if(i < playerList.length - 1) result.append(", ");
+        }
+        return result.toString();
+    }
+
+    private Player[] linkedListToPlayerArray(LinkedList<Player> list) {
+        Player[] result = new Player[list.size()];
+        for(int i = 0; i < list.size(); i++) {
+            result[i] = list.get(i);
+        }
+        return result;
+    }
+
+    private void prepareBlockSystemListsForPlayerKey(UUID ownerID) {
+        if(!blocked.containsKey(ownerID)) {
+            blocked.put(ownerID, new ArrayList<UUID>());
+        }
+
+        if(!unblocked.containsKey(ownerID)) {
+            unblocked.put(ownerID, new ArrayList<UUID>());
+        }
     }
 }

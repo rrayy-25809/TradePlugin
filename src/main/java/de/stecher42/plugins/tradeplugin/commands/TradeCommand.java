@@ -82,6 +82,15 @@ public class TradeCommand implements CommandExecutor {
                                         Translations.YOU_ENABLED_USE_WITHOUT_PERMISSION) :
                                         messageStrings.getTranslation(
                                                 Translations.YOU_DISABLED_USE_WITHOUT_PERMISSION))));
+                    } else if(args[0].equalsIgnoreCase("block")) {
+                        // Block all trade requests
+                        if(!Main.getPlugin().getConfigValues().ALLOW_BLOCKING) p.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.THIS_FEATURE_IS_NOT_ENABLED_IN_CONFIG));
+                        dm.blockAll(p);
+
+                    } else if(args[0].equalsIgnoreCase("unblock")) {
+                        // Block all trade requests
+                        dm.unblockAll(p);
+
                     } else {
                         p.sendMessage(String.format(messageStrings.getTranslation(
                                 Translations.COULD_NOT_FIND_PLAYER_WITH_THAT_NAME_PLEASE_USE_COMMAND),
@@ -105,6 +114,14 @@ public class TradeCommand implements CommandExecutor {
                         } else {
                             p.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.COULD_NOT_FIND_PLAYER_WITH_THAT_NAME));
                         }
+                    } else if(args[0].equalsIgnoreCase("block")) {
+                        // Block specific players
+                        if(!Main.getPlugin().getConfigValues().ALLOW_BLOCKING) p.sendMessage(Main.PREFIX + messageStrings.getTranslation(Translations.THIS_FEATURE_IS_NOT_ENABLED_IN_CONFIG));
+                        dm.addBlock(p, args[1].split(","));
+
+                    } else if(args[0].equalsIgnoreCase("unblock")) {
+                        // Unblock specific players
+                        dm.addUnblock(p, args[1].split(","));
                     }
                 } else {
                     p.sendMessage(WRONG_USAGE);
