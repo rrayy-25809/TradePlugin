@@ -309,6 +309,11 @@ public class DealMaker {
         ArrayList<UUID> localBlockPointer = blocked.get(ownerID);
         ArrayList<UUID> localUnblockPointer = unblocked.get(ownerID);
 
+        if(toBlock.length == 0) {
+            owner.sendMessage(Main.PREFIX + Main.getPlugin().getMessageStrings().getTranslation(Translations.COULD_NOT_FIND_PLAYER_WITH_THAT_NAME));
+            return;
+        }
+
         for(Player current : toBlock) {
             UUID currentID = current.getUniqueId();
             if(!localBlockPointer.contains(currentID)) localBlockPointer.add(currentID);
@@ -327,6 +332,11 @@ public class DealMaker {
 
         ArrayList<UUID> localBlockPointer = blocked.get(ownerID);
         ArrayList<UUID> localUnblockPointer = unblocked.get(ownerID);
+
+        if(toUnblock.length == 0) {
+            owner.sendMessage(Main.PREFIX + Main.getPlugin().getMessageStrings().getTranslation(Translations.COULD_NOT_FIND_PLAYER_WITH_THAT_NAME));
+            return;
+        }
 
         for(Player current : toUnblock) {
             UUID currentID = current.getUniqueId();
