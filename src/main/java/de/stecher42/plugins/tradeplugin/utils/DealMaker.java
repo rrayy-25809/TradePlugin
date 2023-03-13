@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import java.util.*;
+import java.util.logging.Level;
 
 public class DealMaker {
     private HashMap<UUID, Player> pairs = new HashMap<UUID, Player>(); // Owner saved as UUID in key
@@ -278,8 +279,11 @@ public class DealMaker {
         if(blocked.containsKey(requestedID) && blocked.get(requestedID).contains(requesterID)) return true; // check if specific player is blocked
 
         if(generalBlocks.contains(requestedID)) {
-            if(unblocked.get(requestedID).contains(requesterID)) return false; // check if player is whitelisted
-            else return true; // player blocks all and does not accept specificly requester by whitelist
+            if(unblocked.containsKey(requestedID)) {
+                if (unblocked.get(requestedID).contains(requesterID)) return false; // check if player is whitelisted
+                else return true; // player blocks all and does not accept specificly requester by whitelist
+            }
+            return true;
         }
         return false;
     }
