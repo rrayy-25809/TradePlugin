@@ -88,6 +88,11 @@ public class MessageStrings {
             this.translations.put(Translations.CHAT_BUTTON_ACCEPT, "Annehmen");
             this.translations.put(Translations.CHAT_BUTTON_DENY, "Ablehnen");
             this.translations.put(Translations.PLAYER_TO_FAR_AWAY, "§cDer Spieler, dem du eine Handelsanfrage senden möchtest, ist weiter als die erlaubten §6§l%s Blöcke §centfernt.");
+            this.translations.put(Translations.BLOCKED_ALL, "§8Du erhältst nun §ckeine Handelsanfragen§8 mehr!");
+            this.translations.put(Translations.UNBLOCKED_ALL, "§8Du kannst nun wieder §avon allen §8Handelsanfragen erhalten!");
+            this.translations.put(Translations.BLOCKED_PLAYER, "§8Du §cverbietest§8 es nun §6%s§8 dir Handelsanfragen zu senden!");
+            this.translations.put(Translations.UNBLOCKED_PLAYER, "§8Du §aerlaubst§8 es nun §6%s§8 dir Handelsanfragen zu senden!");
+            this.translations.put(Translations.PLAYER_DOES_NOT_ACCEPT_TRADE_REQUESTS, "§cDieser Spieler erlaubt leider keine Handelsanfragen!");
         } else {
             // English translations
 
@@ -144,6 +149,12 @@ public class MessageStrings {
             this.translations.put(Translations.CHAT_BUTTON_ACCEPT, "Accept");
             this.translations.put(Translations.CHAT_BUTTON_DENY, "Deny");
             this.translations.put(Translations.PLAYER_TO_FAR_AWAY, "§cThe player, you try to send a trade request, is too far away from you. The maximum distance is §6§l%s blocks.");
+            this.translations.put(Translations.BLOCKED_ALL, "§8You §cblocked§8 all players to send you a trade request!");
+            this.translations.put(Translations.UNBLOCKED_ALL, "§8You §aunblocked§8 all players to send you a trade request!");
+            this.translations.put(Translations.BLOCKED_PLAYER, "§8You §cblocked§c §6'%s'§8 to send you trade requests!");
+            this.translations.put(Translations.UNBLOCKED_PLAYER, "§8You §aunblocked§c §6'%s'§8 to send you trade requests!");
+            this.translations.put(Translations.PLAYER_DOES_NOT_ACCEPT_TRADE_REQUESTS, "§cThis player does not allow trade requests!");
+            this.translations.put(Translations.THIS_FEATURE_IS_NOT_ENABLED_IN_CONFIG, "§cThis feature is not enabled in config!");
         }
     }
 
