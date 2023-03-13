@@ -22,6 +22,8 @@ public class PlayerRightClicksPlayerListener implements Listener {
                     || p.hasPermission("trade.tradebyclick")
                     || p.hasPermission("trade.*"))) {
 
+                if(configValues.REQUIRE_SHIFT_CLICK && !p.isSneaking()) return;
+
                 Player target = (Player) e.getRightClicked();
                 DealMaker dm = Main.getPlugin().getDealMaker();
                 if(dm.addPlayerToCooldown(p)) {
