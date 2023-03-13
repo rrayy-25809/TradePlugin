@@ -54,6 +54,14 @@ Overall, Trado makes item trading in Minecraft easier and more secure than ever 
 
 `/trade toggle` >  Toggles, if you need specific permission to trade
 
+`/trade block` > Block all trade requests
+
+`/trade block <Name>` > Block trade requests by a specific player
+
+`/trade unblock` > Accept sending trade requests
+
+`/trade unblock <Name>` > Accept trade requests by a specific player (when you block all and unblock specific player it is like a whitelist)
+
 
 ## Permissions
 
@@ -74,7 +82,11 @@ Overall, Trado makes item trading in Minecraft easier and more secure than ever 
 
 `enable_trade_by_right_click_player` > Enables the trade-by-right-click feature when set to `true` (default)
 
+`require_shift_click` > Requires additionally sneaking to send trade request by right-click
+
 `max_distance_for_using_trade_command` > Specify a maximum distance for the /trade <Name> command. Values lower than 1 disable the limitation (default is -1)
+
+`allow_blocking_trade_requests` > When set to true, players can block trade requests
 
 
 ## Language support
