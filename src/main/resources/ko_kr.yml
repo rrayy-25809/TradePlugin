@@ -1,1 +1,37 @@
-
+ACCEPT_TRADE_ITEM: §2§l거래 수락
+OWN_ACCEPT_DEAL_ITEM: §a§l이 거래를 수락하기
+AUTHOR_OF_PLUGIN_IS: '§a이 거래 플러그인의 제작자는 §6Robby3St§a입니다. §6GitHub§a에서 플러그인을 확인하세요.'
+OPPONENT_DENIED_TRADE_REQUEST: '%s님이 당신의 거래 요청을 거절했습니다!'
+ALREADY_SENT_TRADE_REQUEST: §c이미 §6%s§c님에게 거래 요청을 보냈습니다! §8/trade cancel§c 명령어로 먼저 취소해주세요.
+PLAYER_WENT_OFFLINE: 죄송합니다. 해당 플레이어가 오프라인 상태입니다!
+YOU_CANCELED_YOUR_TRADE_REQUEST: %s님과의 거래 요청을 취소했습니다!
+MUST_BE_A_PLAYER: 이 작업을 하려면 플레이어여야 합니다!
+OPPOSITE_ACCEPTS_DEAL_ITEM: §a§l상대가 이 거래를 수락했습니다
+CAN_NOT_TRADE_WITH_YOURSELF: §c자기 자신과는 거래할 수 없습니다!
+DEAL_PARTNERS_FIELD: §7§l§i(거래 상대의 슬롯)
+DOWNLOAD_PLUGIN_HERE: '§a원본 거래 플러그인은 여기에서 다운로드할 수 있습니다: '
+FILLER_ITEM: §7§l(채움 아이템)
+DEAL_PARTNERS_LORE_2: §r§l아이템
+WRONG_USAGE: §c/trade 명령어 사용법이 잘못되었습니다! 올바른 사용법: §6/trade <이름>§c 또는 §6/trade accept§c로 거래 수락.
+YOU_DECLINED_DEAL: 인벤토리를 닫아 %s님과의 거래를 거절했습니다!
+OPPONENT_CANCELED_TRADE_OFFER: '%s님이 거래를 취소했습니다.'
+DEAL_WITH: §6§l%s님과의 거래
+TRADE_REQUEST_SENT: §a§6%s§a님에게 거래 요청을 보냈습니다!
+YOU_GOT_A_NEW_TRADE_OFFER: §6%s§r님에게서 새로운 거래 요청이 왔습니다! §8/trade accept <이름>§r으로 거래를 수락하세요.
+PLAYER_DID_NOT_SENT_YOU_A_TRADE_REQUEST: 해당 플레이어는 당신에게 거래 요청을 보내지 않았습니다. 죄송합니다.
+OPPOSITE_DID_NOT_ACCEPTED_TRADE_ITEM: §c§l상대가 아직 거래를 수락하지 않았습니다
+DEAL_PARTNERS_LORE_1: '§r§l거래 상대의 '
+NO_TRADES_TO_CANCEL: 취소할 수 있는 거래 요청이 없습니다!
+COULD_NOT_FIND_PLAYER_WITH_THAT_NAME: §c해당 이름의 플레이어를 찾을 수 없습니다!
+YOU_DECLINED_TRADE_REQUEST: '거래 요청을 거절했습니다: '
+OWN_TRADE_REQUEST_EXPIRED: §6%s§r님에게 보낸 거래 요청이 만료되었습니다!
+YOU_GOT_NO_TRADING_OFFER: 거래 요청이 없습니다.
+YOU_GOT_MORE_THAN_ONE_OFFER: 여러 개의 거래 요청이 있습니다! /trade accept <이름> 명령어로 특정 거래를 수락해주세요.
+OPPONENT_DECLINED_DEAL: '님이 거래를 거절했습니다!'
+OWN_DECLINE_DEAL_ITEM: §c§l이 거래 거절하기
+TRADE_REQUEST_BY_EXPIRED: §6%s§r님의 거래 요청이 만료되었습니다!
+NO_PERMISSION: §c이 작업을 할 권한이 없습니다!
+PLUGIN_VERSION_IS: '§a현재 사용 중인 플러그인 버전: §6%s§a. 최신 버전은 §6GitHub %s§a에서 확인할 수 있습니다.'
+RELOADED_CONFIG: 설정 파일을 다시 불러왔습니다!
+COULD_NOT_FIND_PLAYER_WITH_THAT_NAME_PLEASE_USE_COMMAND: '%s§c해당 이름의 플레이어 §6''%s''§c를 찾을 수 없습니다. §6/trade <이름>§c 또는 §6/trade accept§c 명령어를 사용해주세요!'
+GOT_NO_REQUESTS_TO_DENY: 거절할 거래 요청이 없습니다!
