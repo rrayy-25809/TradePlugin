@@ -4,7 +4,7 @@ AUTHOR_OF_PLUGIN_IS: '§a이 거래 플러그인의 제작자는 §6Robby3St§a�
 OPPONENT_DENIED_TRADE_REQUEST: '%s님이 당신의 거래 요청을 거절했습니다!'
 ALREADY_SENT_TRADE_REQUEST: §c이미 §6%s§c님에게 거래 요청을 보냈습니다! §8/trade cancel§c 명령어로 먼저 취소해주세요.
 PLAYER_WENT_OFFLINE: 죄송합니다. 해당 플레이어가 오프라인 상태입니다!
-YOU_CANCELED_YOUR_TRADE_REQUEST: %s님과의 거래 요청을 취소했습니다!
+YOU_CANCELED_YOUR_TRADE_REQUEST: 사용자 %s님과의 거래 요청을 취소했습니다!
 MUST_BE_A_PLAYER: 이 작업을 하려면 플레이어여야 합니다!
 OPPOSITE_ACCEPTS_DEAL_ITEM: §a§l상대가 이 거래를 수락했습니다
 CAN_NOT_TRADE_WITH_YOURSELF: §c자기 자신과는 거래할 수 없습니다!
