@@ -1,4 +1,4 @@
-package de.stecher42.plugins.tradeplugin.utils;
+package com.rrayy.tradeplugin.utils;
 
 public enum Translations {
     NO_PERMISSION,

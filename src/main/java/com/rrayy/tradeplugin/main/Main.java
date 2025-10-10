@@ -1,11 +1,11 @@
-package de.stecher42.plugins.tradeplugin.main;
+package com.rrayy.tradeplugin.main;
 
-import de.stecher42.plugins.tradeplugin.commands.TradeCommand;
-import de.stecher42.plugins.tradeplugin.events.PlayerRightClicksPlayerListener;
-import de.stecher42.plugins.tradeplugin.utils.ConfigValues;
-import de.stecher42.plugins.tradeplugin.utils.DealMaker;
-import de.stecher42.plugins.tradeplugin.utils.MessageStrings;
-import de.stecher42.plugins.tradeplugin.utils.TradingWindow;
+import com.rrayy.tradeplugin.commands.TradeCommand;
+import com.rrayy.tradeplugin.events.PlayerRightClicksPlayerListener;
+import com.rrayy.tradeplugin.utils.ConfigValues;
+import com.rrayy.tradeplugin.utils.DealMaker;
+import com.rrayy.tradeplugin.utils.MessageStrings;
+import com.rrayy.tradeplugin.utils.TradingWindow;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;

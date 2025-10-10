@@ -1,6 +1,6 @@
-package de.stecher42.plugins.tradeplugin.utils;
+package com.rrayy.tradeplugin.utils;
 
-import de.stecher42.plugins.tradeplugin.main.Main;
+import com.rrayy.tradeplugin.main.Main;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.TextComponent;

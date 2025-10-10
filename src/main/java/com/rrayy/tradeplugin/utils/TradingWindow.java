@@ -1,6 +1,6 @@
-package de.stecher42.plugins.tradeplugin.utils;
+package com.rrayy.tradeplugin.utils;
 
-import de.stecher42.plugins.tradeplugin.main.Main;
+import com.rrayy.tradeplugin.main.Main;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;

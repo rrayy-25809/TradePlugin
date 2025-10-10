@@ -1,10 +1,10 @@
-package de.stecher42.plugins.tradeplugin.events;
+package com.rrayy.tradeplugin.events;
 
-import de.stecher42.plugins.tradeplugin.main.Main;
-import de.stecher42.plugins.tradeplugin.utils.ConfigValues;
-import de.stecher42.plugins.tradeplugin.utils.DealMaker;
-import de.stecher42.plugins.tradeplugin.utils.MessageStrings;
-import de.stecher42.plugins.tradeplugin.utils.Translations;
+import com.rrayy.tradeplugin.main.Main;
+import com.rrayy.tradeplugin.utils.ConfigValues;
+import com.rrayy.tradeplugin.utils.DealMaker;
+import com.rrayy.tradeplugin.utils.MessageStrings;
+import com.rrayy.tradeplugin.utils.Translations;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
