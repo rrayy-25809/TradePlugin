@@ -7,10 +7,18 @@
 
 plugins {
     java
+    id("com.github.johnrengelman.shadow") version "8.1.1" // Maven Shade Plugin 대체용
 }
 
 group = "com.rrayy"
-version = "1.0"
+version = "2.0.0"
+description = "A little Minecraft Paper Trade Plugin"
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
 
 repositories {
     mavenCentral()
@@ -19,13 +27,32 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.7-R0.1-SNAPSHOT") // Spigot API
+    compileOnly("io.papermc.paper:paper-api:1.21.7-R0.1-SNAPSHOT") // Paper API
+    implementation('net.kyori:adventure-api:4.14.0')
+    implementation("net.kyori:adventure-text-serializer-legacy:4.12.0")
 }
 
-tasks.withType<JavaCompile>().configureEach {
-    options.encoding = "UTF-8"
-}
+tasks {
+    processResources {
+        filteringCharset = "UTF-8"
+        filesMatching("**/*.yml") {
+            expand(project.properties)
+        }
+    }
 
-java { // 자바 버전 설정
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    compileJava {
+        options.encoding = "UTF-8"
+        // Java 21에 맞춰 source/target compatibility도 명시적으로 지정
+        sourceCompatibility = JavaVersion.VERSION_21.toString()
+        targetCompatibility = JavaVersion.VERSION_21.toString()
+    }
+
+    shadowJar {
+        archiveClassifier.set("")
+        minimize() // 불필요한 의존성 제거
+    }
+
+    build {
+        dependsOn(shadowJar)
+    }
 }
